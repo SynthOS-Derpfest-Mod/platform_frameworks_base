@@ -231,7 +231,7 @@ public class KeyguardClockSwitch extends RelativeLayout {
         mStatusBarStateController.addCallback(mStateListener);
         mSysuiColorExtractor.addOnColorsChangedListener(mColorsListener);
         updateColors();
-	updateClockColor();
+	      updateClockColor();
     }
 
     @Override
@@ -533,6 +533,9 @@ public class KeyguardClockSwitch extends RelativeLayout {
 
         mClockView.setTypeface(Typeface.create(fontsArray[lockClockFont][0], fontType));
         mClockViewBold.setTypeface(Typeface.create(fontsArray[lockClockFont][0], fontType));
+        if (mClockPlugin != null) {
+            mClockPlugin.setTypeface(Typeface.create(fontsArray[lockClockFont][0], fontType));
+        }
     }
 
     public void refreshclocksize() {
