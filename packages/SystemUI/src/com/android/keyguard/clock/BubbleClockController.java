@@ -22,6 +22,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Paint.Style;
+import android.graphics.Typeface;
 import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -184,6 +185,11 @@ public class BubbleClockController implements ClockPlugin {
     @Override
     public void setTextColor(int color) {
         updateColor();
+    }
+
+    @Override
+    public void setTypeface(Typeface tf) {
+        mLockClock.setTypeface(tf);
     }
 
     @Override

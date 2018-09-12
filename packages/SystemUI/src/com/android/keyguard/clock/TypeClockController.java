@@ -192,6 +192,12 @@ public class TypeClockController implements ClockPlugin {
     }
 
     @Override
+    public void setTypeface(Typeface tf) {
+        mTypeClock.setTypeface(tf);
+        mLockClock.setTypeface(tf);
+    }
+
+    @Override
     public void setColorPalette(boolean supportsDarkText, int[] colorPalette) {
         if (colorPalette == null || colorPalette.length == 0) {
             return;
