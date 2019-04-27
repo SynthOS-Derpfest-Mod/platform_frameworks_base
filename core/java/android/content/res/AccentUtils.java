@@ -13,7 +13,8 @@ public class AccentUtils {
     private static ArrayList<String> accentResources = new ArrayList<>(
             Arrays.asList("accent_device_default",
                     "accent_device_default_light",
-                    "accent_device_default_dark"));
+                    "accent_device_default_dark",
+                    "gradient_start"));
 
     private static final String ACCENT_COLOR_PROP = "persist.sys.theme.accentcolor";
 
