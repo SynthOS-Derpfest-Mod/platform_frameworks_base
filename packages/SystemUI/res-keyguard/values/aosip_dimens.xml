@@ -26,7 +26,7 @@
     <dimen name="clock_bottom_margin">8dp</dimen>
 
     <!-- padding for date view -->
-    <dimen name="widget_clock_normal_clock_padding">2dp</dimen>
+    <dimen name="widget_clock_normal_clock_padding">8dp</dimen>
 
     <!-- Date styles padding-->
     <dimen name="widget_date_box_padding_hor">12dp</dimen>
@@ -44,5 +44,22 @@
 
     <!-- The minimum bottom margin of the keyguard security container -->
     <dimen name="kg_security_container_min_bottom_margin">0dp</dimen>
+
+    <!-- the size for all the clock sizes -->
+    <dimen name="widget_clock_shishu_size">175dp</dimen>
+
+    <!-- Our custom clock values -->
+    <dimen name="widget_shishu_accent_font_size">45dp</dimen>
+
+    <!-- Font size for inmensity clock -->
+    <dimen name="widget_shishu_inmensity_font_size">35dp</dimen>
+
+    <!-- Font size for nerves clock -->
+    <dimen name="widget_clock_shishu_nerves_width">105dp</dimen>
+    <dimen name="widget_clock_shishu_nerves_height">@dimen/widget_clock_shishu_size</dimen>
+    <dimen name="widget_clock_shishu_nerves_font_size">52dp</dimen>
+
+    <!-- padding for date view -->
+    <dimen name="widget_clock_shishu_date_padding">8dp</dimen>
 
 </resources>
