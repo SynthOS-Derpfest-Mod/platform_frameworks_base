@@ -209,5 +209,6 @@
     <string name="clock_title_one_line_digital">Digital</string>
     <string name="clock_title_default_bold">Standard (fett)</string>
     <string name="clock_title_samsung_bold">Samsung (fett)</string>
+    <string name="date_long_title_today">Heute ist %s</string>
 
 </resources>

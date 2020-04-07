@@ -22,6 +22,7 @@
     <string name="clock_title_binary">Binary</string>
     <string name="clock_title_two_line_digital">Vertical</string>
     <string name="clock_title_one_line_digital">Digital</string>
+    <string name="date_long_title_today">Today is %s</string>
 
     <!-- Minutes displayed in words on the typographic clock face. [CHAR LIMIT=20] -->
     <string-array name="type_clock_minutes_alt">
