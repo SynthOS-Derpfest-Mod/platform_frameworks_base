@@ -715,7 +715,7 @@ public class KeyguardStatusView extends GridLayout implements
         if (mClockSelection != 10 && mClockSelection != 11) {
             mTextClock.setVisibility(View.GONE);
             mSmallClockView.setVisibility(View.VISIBLE);
-            params.addRule(RelativeLayout.BELOW, R.id.clock_view);
+            params.addRule(RelativeLayout.BELOW, R.id.cool_divider);
             mDefaultClockView.setBackgroundResource(0);
             mDefaultClockView.setGravity(Gravity.CENTER);
         } else {

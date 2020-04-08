@@ -56,6 +56,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
+        <View
+            android:id="@+id/cool_divider_two"
+            android:layout_width="52dp"
+            android:layout_height="6dp"
+            android:layout_gravity="center_horizontal|center"
+            android:layout_marginTop="@dimen/date_owner_info_margin"
+            android:layout_marginBottom="@dimen/date_owner_info_margin"
+            android:background="@drawable/cool_divider" />
+
         <TextView
             android:id="@+id/owner_info"
             android:layout_width="match_parent"
