@@ -28,6 +28,7 @@
     android:clipToPadding="false"
     android:orientation="vertical"
     android:layout_centerHorizontal="true">
+
     <TextView
               android:id="@+id/title"
               android:layout_width="match_parent"
