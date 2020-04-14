@@ -22,6 +22,8 @@
     <string name="clock_title_binary">Binary</string>
     <string name="clock_title_two_line_digital">Vertical</string>
     <string name="clock_title_one_line_digital">Digital</string>
+    <string name="clock_title_mnml_box">MNML\'s Box</string>
+    <string name="clock_title_mnml_minimal">MNML\'s Minimal</string>
     <string name="date_long_title_today">Today is %s</string>
 
     <!-- Minutes displayed in words on the typographic clock face. [CHAR LIMIT=20] -->
