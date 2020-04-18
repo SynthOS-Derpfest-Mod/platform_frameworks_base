@@ -264,9 +264,9 @@ public class KeyguardStatusView extends GridLayout implements
         mKeyguardSlice.refreshDateSize();
         refreshOwnerInfoSize();
         refreshOwnerInfoFont();
-	mClockView.updateClockColor();
-	updateClockDateColor();
-	updateOwnerInfoColor();
+	      mClockView.updateClockColor();
+	      updateClockDateColor();
+	      updateOwnerInfoColor();
         mTextColor = mClockView.getCurrentTextColor();
 
         mKeyguardSlice.setContentChangeListener(this::onSliceContentChanged);
@@ -595,6 +595,7 @@ public class KeyguardStatusView extends GridLayout implements
         }
 
         mKeyguardSlice.setViewsTypeface(Typeface.create(fontsArray[lockDateFont][0], fontType));
+        mClockView.setTextDateFont(Typeface.create(fontsArray[lockDateFont][0], fontType));
     }
 
     public float getClockTextSize() {
