@@ -6515,6 +6515,14 @@ public final class Settings {
         public static final String SYNTHOS_ALIGN_LOCKSCREEN_LEFT = "synthos_align_lockscreen_left";
 
         /**
+        * Set OneUI date Format
+        * by.tikkiX2
+        * @hide
+        */
+        public static final String SYNTHOS_ONEUI_DATE_FORMAT = "synthos_oneui_date_format";
+
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
