@@ -87,4 +87,7 @@
         <item>Fifty Nine</item>
     </string-array>
 
+    <!-- Skeleton string format for displaying the OneUI Date. -->
+    <string name="abbrev_wday_oneui_synthos">eee MMMM dd</string>
+
 </resources>
