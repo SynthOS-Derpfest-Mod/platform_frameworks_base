@@ -141,6 +141,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageSwitcher;
 import android.widget.LinearLayout;
 import android.widget.ImageView;
+import android.widget.ImageButton;
 
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.internal.colorextraction.ColorExtractor;
@@ -1679,7 +1680,7 @@ public class StatusBar extends SystemUI implements DemoMode,
         }
     }
 
-    public static void updateDismissAllButton(int backgroundcolor, int iconcolor) {
+    public static void updateDismissAllButton(int iconcolor) {
         if (mDismissAllButton != null) {
             FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) mDismissAllButton.getLayoutParams();
             layoutParams.width = mStaticContext.getResources().getDimensionPixelSize(R.dimen.dismiss_all_button_width);
@@ -1687,12 +1688,8 @@ public class StatusBar extends SystemUI implements DemoMode,
             layoutParams.bottomMargin = mStaticContext.getResources().getDimensionPixelSize(R.dimen.dismiss_all_button_margin_bottom);
             mDismissAllButton.setElevation(mStaticContext.getResources().getDimension(R.dimen.dismiss_all_button_elevation));
 
-            GradientDrawable shape = new GradientDrawable();
-            shape.setShape(GradientDrawable.OVAL);
-            shape.setColor(backgroundcolor);
-
             mDismissAllButton.setColorFilter(iconcolor);
-            mDismissAllButton.setBackground(shape);
+            mDismissAllButton.setBackground(mStaticContext.getResources().getDrawable(R.drawable.oos_dismiss_all_bcg));
         }
     }
 
