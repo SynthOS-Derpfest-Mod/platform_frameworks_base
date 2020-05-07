@@ -49,6 +49,7 @@ import androidx.core.graphics.ColorUtils;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.keyguard.clock.CustomTextClock;
 import com.android.systemui.Dependency;
+import com.android.systemui.omni.CurrentWeatherView;
 import com.android.systemui.R;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 
@@ -83,6 +84,9 @@ public class KeyguardStatusView extends GridLayout implements
     private boolean mPulsing;
     private float mDarkAmount = 0;
     private int mTextColor;
+    private CurrentWeatherView mWeatherView;
+    private boolean mShowWeather;
+    private boolean mOmniStyle;
 
     /**
      * Bottom margin that defines the margin between bottom of smart space and top of notification
@@ -125,6 +129,7 @@ public class KeyguardStatusView extends GridLayout implements
                 mKeyguardSlice.refreshdatesize();
                 refreshOwnerInfoSize();
                 refreshOwnerInfoFont();
+                updateSettings();
             }
         }
 
@@ -150,6 +155,7 @@ public class KeyguardStatusView extends GridLayout implements
             updateDateStyles();
             refreshOwnerInfoSize();
             refreshOwnerInfoFont();
+            updateSettings();
         }
 
         @Override
@@ -231,6 +237,10 @@ public class KeyguardStatusView extends GridLayout implements
         mTextClock = findViewById(R.id.custom_text_clock_view);
         mOwnerInfo = findViewById(R.id.owner_info);
         mKeyguardSlice = findViewById(R.id.keyguard_status_area);
+
+        mWeatherView = (CurrentWeatherView) findViewById(R.id.weather_container);
+        updateSettings();
+
         mKeyguardSliceView = findViewById(R.id.keyguard_status_area);
         mClockView.refreshLockFont();
         refreshLockDateFont();
@@ -292,6 +302,9 @@ public class KeyguardStatusView extends GridLayout implements
         if (mOwnerInfo != null) {
             mOwnerInfo.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                     getResources().getDimensionPixelSize(R.dimen.lock_date_font_size_18));
+        }
+        if (mWeatherView != null) {
+            mWeatherView.onDensityOrFontScaleChanged();
         }
         loadBottomMargin();
     }
@@ -1103,6 +1116,26 @@ public class KeyguardStatusView extends GridLayout implements
                 );
                 mDefaultClockView.setGravity(Gravity.CENTER);
         }
+        
+            final Resources res = getContext().getResources();
+            mShowWeather = Settings.System.getIntForUser(resolver,
+                    Settings.System.OMNI_LOCKSCREEN_WEATHER_ENABLED, 0,
+                    UserHandle.USER_CURRENT) == 1;
+
+            mOmniStyle = Settings.System.getIntForUser(resolver,
+                    Settings.System.LOCKSCREEN_WEATHER_STYLE, 1,
+                    UserHandle.USER_CURRENT) == 0;
+
+            if (mWeatherView != null) {
+                if (mShowWeather && mOmniStyle) {
+                    mWeatherView.setVisibility(View.VISIBLE);
+                    mWeatherView.enableUpdates();
+                }
+                if (!mShowWeather || !mOmniStyle) {
+                    mWeatherView.setVisibility(View.GONE);
+                    mWeatherView.disableUpdates();
+                }
+            }
 
         updateDateStyles();
     }
