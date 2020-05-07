@@ -5146,10 +5146,18 @@ public final class Settings {
                 new SettingsValidators.InclusiveIntegerRangeValidator(0, 2);
 
         /**
-         * Sets the date string style
-         * 0 - Regular style
-         * 1 - Lowercase
-         * 2 - Uppercase
+         * Display cutout
+         * @hide
+         */
+        public static final String BRIGHTNESS_SLIDER_QS_UNEXPANDED = "brightness_slider_qs_unexpanded";
+
+        /** @hide */
+        private static final Validator BRIGHTNESS_SLIDER_QS_UNEXPANDED_VALIDATOR = new
+                SettingsValidators.InclusiveIntegerRangeValidator(0, 1);
+
+
+        /**
+         * Show data usage in QS header
          * @hide
          */
         public static final String STATUSBAR_CLOCK_DATE_STYLE = "statusbar_clock_date_style";
@@ -7321,6 +7329,7 @@ public final class Settings {
             PRIVATE_SETTINGS.add(FLASHLIGHT_ON_CALL_RATE);
             PRIVATE_SETTINGS.add(QS_DATAUSAGE);
             PRIVATE_SETTINGS.add(SYSTEMUI_PLUGIN_VOLUME);
+            PRIVATE_SETTINGS.add(BRIGHTNESS_SLIDER_QS_UNEXPANDED);
         }
 
         /**
@@ -7650,6 +7659,7 @@ public final class Settings {
             VALIDATORS.put(GAMING_MODE_BRIGHTNESS_ENABLED, GAMING_MODE_BRIGHTNESS_ENABLED_VALIDATOR);
             VALIDATORS.put(GAMING_MODE_MEDIA_ENABLED, GAMING_MODE_MEDIA_ENABLED_VALIDATOR);
             VALIDATORS.put(GAMING_MODE_MEDIA, GAMING_MODE_MEDIA_VALIDATOR);
+            VALIDATORS.put(BRIGHTNESS_SLIDER_QS_UNEXPANDED, BRIGHTNESS_SLIDER_QS_UNEXPANDED_VALIDATOR);
         }
 
         /**
