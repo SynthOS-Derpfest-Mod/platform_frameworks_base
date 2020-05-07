@@ -106,6 +106,7 @@ public class QSPanel extends LinearLayout implements Callback,
     private ImageView mMaxBrightness;
 
     private boolean mBrightnessBottom;
+    private boolean mQSBrightnessSlider;
     private boolean mBrightnessVisible;
     private boolean mShowAutoBrightness;
     private boolean mShowMinMaxBrightness;
@@ -619,6 +620,36 @@ public class QSPanel extends LinearLayout implements Callback,
 
     protected boolean shouldShowDetail() {
         return mExpanded;
+    }
+
+    private final class SettingObserver extends ContentObserver {
+        public SettingObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.BRIGHTNESS_SLIDER_QS_UNEXPANDED),
+                    false, this, UserHandle.USER_ALL);
+            update();
+        }
+
+        @Override
+        public void onChange(boolean selfChange, Uri uri) {
+            super.onChange(selfChange, uri);
+            update();
+        }
+
+        public void update() {
+            mQSBrightnessSlider = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.BRIGHTNESS_SLIDER_QS_UNEXPANDED, 0) != 0;
+
+            if (mQSBrightnessSlider) {
+                removeView(mBrightnessView);
+            }
+
+        }
     }
 
     protected TileRecord addTile(final QSTile tile, boolean collapsedView) {
