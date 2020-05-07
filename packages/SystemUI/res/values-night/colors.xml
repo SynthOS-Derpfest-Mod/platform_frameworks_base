@@ -88,7 +88,8 @@
     <color name="recents_dismiss_all_background_color_ripple">#555555</color>
     <color name="recents_dismiss_all_icon_color">@android:color/white</color>
 
-    <color name="volume_background_tint">#141414</color>
+    <color name="volume_dialog_background">#141414</color>
+    <color name="volume_background_tint">#0d0d0d</color>
 
     <color name="ringer_icon_normal">@android:color/white</color>
     <color name="ringer_bcg_normal">@color/volume_background_tint</color>
