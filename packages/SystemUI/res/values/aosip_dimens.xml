@@ -22,10 +22,22 @@
     <dimen name="vertical_max_swift">1.0dp</dimen>
 
     <!-- Custom header -->
-    <dimen name="qs_header_image_offset">25dp</dimen>
-    <dimen name="qs_header_image_side_margin">4dp</dimen>
-    <dimen name="qs_header_image_top_margin">4dp</dimen>
-    <dimen name="qs_header_image_bottom_margin">4dp</dimen>
+    <dimen name="qs_header_image_offset">1dp</dimen>
+    <dimen name="qs_header_image_side_margin">8dp</dimen>
+    <dimen name="qs_header_image_top_margin">8dp</dimen>
+    <dimen name="qs_header_image_bottom_margin">8dp</dimen>
+
+    <!-- SynthUI -->
+    <dimen name="qs_panel_image_offset">208dp</dimen>
+    <dimen name="qs_status_icons_offset">112dp</dimen>
+    <dimen name="qs_panel_margin_status_icons">112dp</dimen>
+    <dimen name="qs_panel_secundary_top_margin">224dp</dimen>
+    <dimen name="qs_panel_top_margin">224dp</dimen>
+    <dimen name="qs_panel_all_top_margin">232dp</dimen>
+    <dimen name="qs_panel_image_side_margin">8dp</dimen>
+    <dimen name="qs_panel_image_top_margin">10dp</dimen>
+    <dimen name="qs_panel_image_bottom_margin">8dp</dimen>
+    <dimen name="qs_expanded_status_icons_bottom_margin">0dp</dimen>
 
     <!-- Network traffic monitor -->
     <dimen name="net_traffic_multi_text_size">8dp</dimen>
@@ -55,7 +67,7 @@
     <!-- Volume panel -->
     <dimen name="volume_dialog_panel_transparent_padding_left">20dp</dimen>
 
-   <dimen name="fod_animation_size">280dp</dimen>  
+   <dimen name="fod_animation_size">280dp</dimen>
 
     <!-- OmniWeather image size -->
     <dimen name="current_weather_image_size">30dp</dimen>

@@ -31,6 +31,10 @@ import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.ContentObserver;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.LinearGradient;
+import android.graphics.Shader;
+import android.graphics.Shader.TileMode;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.media.AudioManager;
@@ -47,12 +51,14 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.ContextThemeWrapper;
 import android.view.DisplayCutout;
+import android.view.Gravity;
 import android.view.View;
 import android.view.WindowInsets;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.TextClock;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -65,6 +71,7 @@ import com.android.systemui.plugins.ActivityStarter;
 import com.android.systemui.plugins.DarkIconDispatcher;
 import com.android.systemui.plugins.DarkIconDispatcher.DarkReceiver;
 import com.android.systemui.qs.QSDetail.Callback;
+import com.android.systemui.omni.CurrentWeatherView;
 import com.android.systemui.statusbar.phone.PhoneStatusBarView;
 import com.android.systemui.statusbar.phone.StatusBarIconController;
 import com.android.systemui.statusbar.phone.StatusBarIconController.TintedIconManager;
@@ -137,8 +144,15 @@ public class QuickStatusBarHeader extends RelativeLayout implements
     private View mRingerContainer;
     private Clock mClockView;
     private DateView mDateView;
+    private TextClock mSynthClockExpandedView;
+    private TextClock mSynthClockStatusView;
+    private TextClock mSynthDateExpandedView;
+    private View mStatusIconsContainer;
+    private View mStatusInfoContainer;
+    private CurrentWeatherView mWeatherView;
     private BatteryMeterView mBatteryMeterView;
 
+    private TextView mExpandedText;
     private class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
             super(handler);
@@ -172,6 +186,24 @@ public class QuickStatusBarHeader extends RelativeLayout implements
                     this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System
                     .getUriFor(Settings.System.OMNI_STATUS_BAR_FILE_HEADER_IMAGE), false,
+                    this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.SYNTHUI_QSEXPANDED_TEXT_SHOW), false,
+                    this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.SYNTHUI_QSEXPANDED_TEXT_STRING), false,
+                    this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.SYNTHUI_ACCENT_CLOCK_QSEXPANDED), false,
+                    this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.SYNTHUI_ACCENT_DATE_QSEXPANDED), false,
+                    this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.SYNTHUI_STATUSICONS_QSEXPANDED), false,
+                    this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.SYNTHUI_STATUSINFO_QSEXPANDED), false,
                     this, UserHandle.USER_ALL);
         }
 
@@ -264,25 +296,46 @@ public class QuickStatusBarHeader extends RelativeLayout implements
 
         updateResources();
 
+        @ColorInt int textColor = Utils.getColorAttrDefaultColor(getContext(),
+                R.attr.wallpaperTextColor);
+        float intensity = textColor == Color.WHITE ? 0 : 1;
+
         Rect tintArea = new Rect(0, 0, 0, 0);
-        int colorForeground = Utils.getColorAttrDefaultColor(getContext(),
-                android.R.attr.colorForeground);
-        float intensity = getColorIntensity(colorForeground);
-        int fillColor = mDualToneHandler.getSingleColor(intensity);
+        //int colorForeground = Utils.getColorAttrDefaultColor(getContext(),
+        //        android.R.attr.colorForeground);
+        //float intensity = getColorIntensity(colorForeground);
+        //int fillColor = mDualToneHandler.getSingleColor(intensity);
 
         // Set light text on the header icons because they will always be on a black background
         applyDarkness(R.id.clock, tintArea, 0, DarkIconDispatcher.DEFAULT_ICON_TINT);
 
         // Set the correct tint for the status icons so they contrast
-        mIconManager.setTint(fillColor);
-        mNextAlarmIcon.setImageTintList(ColorStateList.valueOf(fillColor));
-        mRingerModeIcon.setImageTintList(ColorStateList.valueOf(fillColor));
+        mIconManager.setTint(textColor);
+        mNextAlarmIcon.setImageTintList(ColorStateList.valueOf(textColor));
+        mRingerModeIcon.setImageTintList(ColorStateList.valueOf(textColor));
 
         mClockView = findViewById(R.id.clock);
         mClockView.setOnClickListener(this);
         mClockView.setQsHeader();
         mDateView = findViewById(R.id.date);
         mDateView.setOnClickListener(this);
+        mWeatherView = findViewById(R.id.qs_weather_container);
+        mWeatherView.disableUpdates();
+        mWeatherView.enableUpdates();
+        mSynthClockExpandedView = findViewById(R.id.SynthClockExpanded);
+        mSynthDateExpandedView = findViewById(R.id.SynthDateExpanded);
+        mStatusIconsContainer = findViewById(R.id.synthStatusIconsContainer);
+        mStatusInfoContainer = findViewById(R.id.synth_info_container);
+        mSynthClockStatusView = findViewById(R.id.SynthClock);
+
+        mSynthClockExpandedView.setTextColor(textColor);
+        mSynthClockStatusView.setTextColor(textColor);
+        mSynthDateExpandedView.setTextColor(textColor);
+        mDateView.setTextColor(textColor);
+
+        //qs Expanded text by.tikkiX2
+
+        mExpandedText = findViewById(R.id.expanded_text);
 
         mRingerModeTextView.setSelected(true);
         mNextAlarmTextView.setSelected(true);
@@ -299,6 +352,32 @@ public class QuickStatusBarHeader extends RelativeLayout implements
                     : View.GONE);
         }
     }
+
+    private void setExpandedText() {
+
+      boolean isShow = Settings.System.getIntForUser(mContext.getContentResolver(),
+                      Settings.System.SYNTHUI_QSEXPANDED_TEXT_SHOW, 1,
+                      UserHandle.USER_CURRENT) == 1;
+
+      String text = Settings.System.getStringForUser(mContext.getContentResolver(),
+                      Settings.System.SYNTHUI_QSEXPANDED_TEXT_STRING,
+                      UserHandle.USER_CURRENT);
+
+                            if(mExpandedText != null){
+      if (isShow) {
+          if (text == null || text == "") {
+              mExpandedText.setText("#Derpfest TikkiBuild");
+              mExpandedText.setVisibility(View.VISIBLE);
+          } else {
+              mExpandedText.setText(text);
+              mExpandedText.setVisibility(View.VISIBLE);
+          }
+      } else {
+            mExpandedText.setVisibility(View.GONE);
+      }
+    }
+    }
+
 
     private boolean updateRingerStatus() {
         boolean isOriginalVisible = mRingerModeTextView.getVisibility() == View.VISIBLE;
@@ -392,7 +471,7 @@ public class QuickStatusBarHeader extends RelativeLayout implements
                 (mCustomHeaderImage != null || mCustomHeaderFile != null);
 
         int topMargin = resources.getDimensionPixelSize(
-                com.android.internal.R.dimen.quick_qs_offset_height) + (headerImageSelected ?
+                R.dimen.qs_panel_secundary_top_margin) + (mHeaderImageEnabled ?
                 resources.getDimensionPixelSize(R.dimen.qs_header_image_offset) : 0);
 
         mSystemIconsView.getLayoutParams().height = topMargin;
@@ -403,7 +482,7 @@ public class QuickStatusBarHeader extends RelativeLayout implements
             lp.height = topMargin;
         } else {
             int qsHeight = resources.getDimensionPixelSize(
-                    com.android.internal.R.dimen.quick_qs_total_height);
+                    R.dimen.qs_panel_secundary_top_margin);
 
             if (headerImageSelected) {
                 qsHeight += resources.getDimensionPixelSize(R.dimen.qs_header_image_offset);
@@ -468,11 +547,70 @@ public class QuickStatusBarHeader extends RelativeLayout implements
                 .build();
     }
 
+    private void updateSynthAccent() {
+
+
+        @ColorInt int textColor = Utils.getColorAttrDefaultColor(getContext(),
+                R.attr.wallpaperTextColor);
+        float intensity = textColor == Color.WHITE ? 0 : 1;
+        Rect tintArea = new Rect(0, 0, 0, 0);
+
+        boolean clockAccent = Settings.System.getIntForUser(mContext.getContentResolver(),
+                        Settings.System.SYNTHUI_ACCENT_CLOCK_QSEXPANDED, 1,
+                        UserHandle.USER_CURRENT) == 1;
+
+        boolean dateAccent = Settings.System.getIntForUser(mContext.getContentResolver(),
+                        Settings.System.SYNTHUI_ACCENT_DATE_QSEXPANDED, 1,
+                        UserHandle.USER_CURRENT) == 1;
+
+        if (clockAccent) {
+            mSynthClockExpandedView.setTextColor(mContext.getResources().getColor(R.color.accent_device_default_light));
+        } else {
+            mSynthClockExpandedView.setTextColor(textColor);
+        }
+
+        if (dateAccent) {
+            mSynthDateExpandedView.setTextColor(mContext.getResources().getColor(R.color.accent_device_default_light));
+        } else {
+            mSynthDateExpandedView.setTextColor(textColor);
+        }
+
+    }
+
+    private void updateSynthStatusIcons() {
+
+        boolean isShow = Settings.System.getIntForUser(mContext.getContentResolver(),
+                        Settings.System.SYNTHUI_STATUSICONS_QSEXPANDED, 1,
+                        UserHandle.USER_CURRENT) == 1;
+
+        if (isShow) {
+            mStatusIconsContainer.setVisibility(View.VISIBLE);
+        } else {
+            mStatusIconsContainer.setVisibility(View.GONE);
+        }
+
+    }
+
+    private void updateSynthStatusInfo() {
+
+        boolean isShow = Settings.System.getIntForUser(mContext.getContentResolver(),
+                        Settings.System.SYNTHUI_STATUSINFO_QSEXPANDED, 0,
+                        UserHandle.USER_CURRENT) == 1;
+
+        if (isShow) {
+            mStatusInfoContainer.setVisibility(View.VISIBLE);
+        } else {
+            mStatusInfoContainer.setVisibility(View.GONE);
+        }
+
+    }
+
     public void setExpanded(boolean expanded) {
         if (mExpanded == expanded) return;
         mExpanded = expanded;
         mHeaderQsPanel.setExpanded(expanded);
         updateEverything();
+        setExpandedText();
     }
 
     /**
@@ -683,6 +821,10 @@ public class QuickStatusBarHeader extends RelativeLayout implements
         updateQSClock();
         updateResources();
         updateStatusbarProperties();
+        updateSynthAccent();
+        updateSynthStatusIcons();
+        updateSynthStatusInfo();
+        setExpandedText();
     }
 
     // Update color schemes in landscape to use wallpaperTextColor

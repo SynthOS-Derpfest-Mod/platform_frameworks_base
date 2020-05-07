@@ -297,14 +297,14 @@ public class QSContainerImpl extends FrameLayout implements
 
     private void updateResources() {
         int topMargin = mContext.getResources().getDimensionPixelSize(
-                com.android.internal.R.dimen.quick_qs_offset_height) + (mHeaderImageEnabled ?
-                mContext.getResources().getDimensionPixelSize(R.dimen.qs_header_image_offset) : 0);
+                R.dimen.qs_panel_top_margin) + (mHeaderImageEnabled ?
+                mContext.getResources().getDimensionPixelSize(R.dimen.qs_header_image_offset) : 8);
 
         int statusBarSideMargin = mHeaderImageEnabled ? mContext.getResources().getDimensionPixelSize(
                 R.dimen.qs_header_image_side_margin) : 0;
 
         int gradientTopMargin = !mHeaderImageEnabled ? mContext.getResources().getDimensionPixelSize(
-                com.android.internal.R.dimen.quick_qs_offset_height) : 0;
+                R.dimen.qs_panel_image_offset) : 0;
 
         ((LayoutParams) mQSPanel.getLayoutParams()).topMargin = topMargin;
         mQSPanel.setLayoutParams(mQSPanel.getLayoutParams());

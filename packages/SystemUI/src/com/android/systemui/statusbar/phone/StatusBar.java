@@ -2369,6 +2369,25 @@ public class StatusBar extends SystemUI implements DemoMode,
         updateTheme();
     }
 
+    public void updateBrightnessSliderOverlay() {
+        boolean UnexpandedQSBrightnessSlider = Settings.System.getIntForUser(mContext.getContentResolver(),
+                        Settings.System.BRIGHTNESS_SLIDER_QS_UNEXPANDED, 0, UserHandle.USER_CURRENT) == 1;
+        if (mUnexpandedQSBrightnessSlider != UnexpandedQSBrightnessSlider){
+            mUnexpandedQSBrightnessSlider = UnexpandedQSBrightnessSlider;
+            mUiOffloadThread.submit(() -> {
+                final IOverlayManager mOverlayManager = IOverlayManager.Stub.asInterface(
+                                ServiceManager.getService(Context.OVERLAY_SERVICE));
+                try {
+                    mOverlayManager.setEnabled("com.extendedui.overlay.brightnessslider",
+                                mUnexpandedQSBrightnessSlider, mLockscreenUserManager.getCurrentUserId());
+                    mOverlayManager.setEnabled("com.synthos.systemui.overlay.brightnessslider",
+                                mUnexpandedQSBrightnessSlider, mLockscreenUserManager.getCurrentUserId());
+                } catch (RemoteException ignored) {
+                }
+            });
+        }
+    }
+
     private void setCutoutOverlay(boolean enable) {
         try {
             mOverlayManager.setEnabled("com.arrow.overlay.hidecutout",
@@ -2384,23 +2403,6 @@ public class StatusBar extends SystemUI implements DemoMode,
                         enable, mLockscreenUserManager.getCurrentUserId());
         } catch (RemoteException e) {
             Log.w(TAG, "Failed to handle statusbar height overlay", e);
-        }
-    }
-
-    public void updateBrightnessSliderOverlay() {
-        boolean UnexpandedQSBrightnessSlider = Settings.System.getIntForUser(mContext.getContentResolver(),
-                        Settings.System.BRIGHTNESS_SLIDER_QS_UNEXPANDED, 0, UserHandle.USER_CURRENT) == 1;
-        if (mUnexpandedQSBrightnessSlider != UnexpandedQSBrightnessSlider){
-            mUnexpandedQSBrightnessSlider = UnexpandedQSBrightnessSlider;
-            mUiOffloadThread.submit(() -> {
-                final IOverlayManager mOverlayManager = IOverlayManager.Stub.asInterface(
-                                ServiceManager.getService(Context.OVERLAY_SERVICE));
-                try {
-                    mOverlayManager.setEnabled("com.extendedui.overlay.brightnessslider",
-                                mUnexpandedQSBrightnessSlider, mLockscreenUserManager.getCurrentUserId());
-                } catch (RemoteException ignored) {
-                }
-            });
         }
     }
 

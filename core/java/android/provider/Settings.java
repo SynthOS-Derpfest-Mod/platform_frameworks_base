@@ -6476,7 +6476,7 @@ public final class Settings {
         /** @hide */
         private static final Validator LOCKSCREEN_WEATHER_SHOW_TEMP_VALIDATOR = BOOLEAN_VALIDATOR;
 
-        /**
+         /**
           * Whether cool divider in lockscreen shows
           * by.tikkiX2
           * @hide
@@ -6488,6 +6488,18 @@ public final class Settings {
            * @hide
            */
           public static final String SYNTHOS_HIDE_THINGS_VOLUMEPANEL = "synthos_hide_things_volumepanel";
+
+        /**
+         * Whether footer #DerpFest TikkiBuild text shows
+         * @hide
+         */
+        public static final String SYNTHUI_QSEXPANDED_TEXT_SHOW = "synthui_qsexpanded_text_show";
+
+        /**
+         * QS footer text
+         * @hide
+         */
+        public static final String SYNTHUI_QSEXPANDED_TEXT_STRING = "synthui_qsexpanded_text_string";
 
         /**
          * Color of the weather condition icons on the lock screen
@@ -6520,6 +6532,35 @@ public final class Settings {
         * @hide
         */
         public static final String SYNTHOS_ONEUI_DATE_FORMAT = "synthos_oneui_date_format";
+
+
+        /**
+        * SynthUI
+        * by.tikkiX2
+        * @hide
+        */
+        public static final String SYNTHUI_ACCENT_CLOCK_QSEXPANDED = "synthui_accent_clock_qsexpanded";
+
+        /**
+        * SynthUI
+        * by.tikkiX2
+        * @hide
+        */
+        public static final String SYNTHUI_ACCENT_DATE_QSEXPANDED = "synthui_accent_date_qsexpanded";
+
+        /**
+        * SynthUI
+        * by.tikkiX2
+        * @hide
+        */
+        public static final String SYNTHUI_STATUSICONS_QSEXPANDED = "synthui_statusicons_qsexpanded";
+
+        /**
+        * SynthUI
+        * by.tikkiX2
+        * @hide
+        */
+        public static final String SYNTHUI_STATUSINFO_QSEXPANDED = "synthui_statusinfo_qsexpanded";
 
 
         /**
