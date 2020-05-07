@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="54dp"
+    android:height="54dp">
+    <item>
+        <bitmap xmlns:android="http://schemas.android.com/apk/res/android"
+            android:gravity="fill"
+            android:alpha="0.80"
+            android:tint="@color/clock_gradient_general_gradient_start"
+            android:src="@*android:drawable/synthos_diamond_clock_bg" />
+    </item>
+</layer-list>
