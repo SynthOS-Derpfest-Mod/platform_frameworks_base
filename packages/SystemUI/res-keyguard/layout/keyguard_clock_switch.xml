@@ -73,6 +73,17 @@
         android:background="@drawable/cool_divider"
         android:layout_below="@id/clock_view" />
 
+    <View
+        android:id="@+id/cool_divider_three"
+        android:layout_width="52dp"
+        android:layout_height="6dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/date_owner_info_margin"
+        android:layout_marginBottom="@dimen/date_owner_info_margin"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/cool_divider"
+        android:layout_below="@id/keyguard_status_area" />
+
     <include layout="@layout/current_weather_view"
         android:id="@+id/weather_container"
         android:layout_width="wrap_content"
@@ -91,5 +102,6 @@
     <include layout="@layout/keyguard_status_area"
         android:id="@+id/keyguard_status_area"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_below="@id/cool_divider" />
 </com.android.keyguard.KeyguardClockSwitch>

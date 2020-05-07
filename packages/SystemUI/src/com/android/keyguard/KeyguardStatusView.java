@@ -104,6 +104,12 @@ public class KeyguardStatusView extends GridLayout implements
     private int mDateVerPadding;
     private int mDateHorPadding;
 
+    //Cool dividers YEAH MOOOOREEEEE GRADDIIIIIIEEEEENTTT HAHAHAAHAHAHA
+    private View mCoolDividerOne;
+    private View mCoolDividerTwo;
+    private View mCoolDividerThree;
+    private boolean mShowDividers;
+
     private KeyguardUpdateMonitorCallback mInfoCallback = new KeyguardUpdateMonitorCallback() {
 
         @Override
@@ -237,6 +243,9 @@ public class KeyguardStatusView extends GridLayout implements
         mTextClock = findViewById(R.id.custom_text_clock_view);
         mOwnerInfo = findViewById(R.id.owner_info);
         mKeyguardSlice = findViewById(R.id.keyguard_status_area);
+        mCoolDividerOne = findViewById(R.id.cool_divider);
+        mCoolDividerTwo = findViewById(R.id.cool_divider_two);
+        mCoolDividerThree = findViewById(R.id.cool_divider_three);
 
         mWeatherView = (CurrentWeatherView) findViewById(R.id.weather_container);
         updateSettings();
@@ -999,6 +1008,8 @@ public class KeyguardStatusView extends GridLayout implements
 
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)
                 mKeyguardSlice.getLayoutParams();
+        mShowDividers = Settings.System.getIntForUser(resolver,
+                Settings.System.SYNTHOS_LOCK_COOL_DIVIDER_SHOW, 1, UserHandle.USER_CURRENT) == 1;
         mClockSelection = Settings.Secure.getIntForUser(resolver,
                 Settings.Secure.LOCKSCREEN_CLOCK_SELECTION, 0, UserHandle.USER_CURRENT);
         final boolean mShowClock = Settings.System.getIntForUser(resolver,
@@ -1010,6 +1021,16 @@ public class KeyguardStatusView extends GridLayout implements
                 ? (mShowClock ? View.VISIBLE : View.GONE) : View.VISIBLE);
         mSmallClockView = findViewById(R.id.clock_view);
         mTextClock = findViewById(R.id.custom_text_clock_view);
+
+        if (mShowDividers){
+            mCoolDividerOne.setVisibility(View.VISIBLE);
+            mCoolDividerTwo.setVisibility(View.VISIBLE);
+            mCoolDividerThree.setVisibility(View.VISIBLE);
+        } else {
+            mCoolDividerOne.setVisibility(View.GONE);
+            mCoolDividerTwo.setVisibility(View.GONE);
+            mCoolDividerThree.setVisibility(View.GONE);
+        }
 
         if (mClockSelection >= 5 && mClockSelection <= 9)
             mDefaultClockView.setLineSpacing(0, 0.8f);
@@ -1135,7 +1156,7 @@ public class KeyguardStatusView extends GridLayout implements
                 );
                 mDefaultClockView.setGravity(Gravity.CENTER);
         }
-        
+
             final Resources res = getContext().getResources();
             mShowWeather = Settings.System.getIntForUser(resolver,
                     Settings.System.OMNI_LOCKSCREEN_WEATHER_ENABLED, 0,

@@ -6467,6 +6467,14 @@ public final class Settings {
         private static final Validator LOCKSCREEN_WEATHER_SHOW_TEMP_VALIDATOR = BOOLEAN_VALIDATOR;
 
         /**
+          * Whether cool divider in lockscreen shows
+          * by.tikkiX2
+          * @hide
+          */
+         public static final String SYNTHOS_LOCK_COOL_DIVIDER_SHOW = "synthos_lock_cool_divider_show";
+
+        /**
+         * Color of the weather condition icons on the lock screen
          * @hide
          */
         public static final String LOCKSCREEN_WEATHER_SHOW_CITY = "lockscreen_weather_show_city";
