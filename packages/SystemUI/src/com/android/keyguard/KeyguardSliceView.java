@@ -220,6 +220,8 @@ public class KeyguardSliceView extends LinearLayout implements View.OnClickListe
                 Settings.Secure.LOCKSCREEN_CLOCK_SELECTION, 0, UserHandle.USER_CURRENT) == 10;
         int mTextClockAlignment = Settings.System.getIntForUser(resolver,
                 Settings.System.TEXT_CLOCK_ALIGNMENT, 0, UserHandle.USER_CURRENT);
+        boolean mAlignLeft = Settings.System.getIntForUser(resolver,
+                Settings.System.SYNTHOS_ALIGN_LOCKSCREEN_LEFT, 0, UserHandle.USER_CURRENT) == 1;
 
         ListContent lc = new ListContent(getContext(), mSlice);
         SliceContent headerContent = lc.getHeader();
@@ -266,6 +268,8 @@ public class KeyguardSliceView extends LinearLayout implements View.OnClickListe
                     mRowContainer.setGravity(Gravity.END);
                     break;
             }
+        } else if (mAlignLeft){
+            mRowContainer.setGravity(Gravity.LEFT);
         } else {
             mRowContainer.setGravity(Gravity.CENTER);
         }

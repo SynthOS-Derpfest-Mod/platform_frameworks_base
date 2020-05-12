@@ -6824,6 +6824,16 @@ public final class Settings {
                BOOLEAN_VALIDATOR;
 
         /**
+         * Align Left padding
+         * by.tikkix2
+         * @hide
+         */
+        public static final String SYNTHOS_ALIGN_LEFT_MARGIN = "synthos_align_left_margin";
+
+        /** @hide */
+        private static final Validator SYNTHOS_ALIGN_LEFT_MARGIN_VALIDATOR = ANY_INTEGER_VALIDATOR;
+
+        /**
         * 0: OmniJaws Style
         * 1: KeyguardSlice Style
         * @hide
@@ -6872,6 +6882,13 @@ public final class Settings {
         public static final String SYNTHOS_CENTER_NOTIFICATION_HEADERS = "synthos_center_notification_headers";
 
         private static final Validator SYNTHOS_CENTER_NOTIFICATION_HEADERS_VALIDATOR = BOOLEAN_VALIDATOR;
+
+        /**
+        * Align to left the lockclock, date and weather
+        * by.tikkiX2
+        * @hide
+        */
+        public static final String SYNTHOS_ALIGN_LOCKSCREEN_LEFT = "synthos_align_lockscreen_left";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
@@ -7164,6 +7181,7 @@ public final class Settings {
             GAMING_MODE_BRIGHTNESS_ENABLED,
             GAMING_MODE_MEDIA_ENABLED,
             GAMING_MODE_MEDIA,
+            SYNTHOS_ALIGN_LEFT_MARGIN,
         };
 
         /**
@@ -7409,6 +7427,7 @@ public final class Settings {
             PRIVATE_SETTINGS.add(LOCKSCREEN_WEATHER_STYLE);
             PRIVATE_SETTINGS.add(LOCKSCREEN_WEATHER_SHOW_TEMP);
             PRIVATE_SETTINGS.add(LOCKSCREEN_WEATHER_SHOW_CITY);
+            PRIVATE_SETTINGS.add(SYNTHOS_ALIGN_LEFT_MARGIN);
         }
 
         /**
@@ -7745,6 +7764,7 @@ public final class Settings {
             VALIDATORS.put(LOCKSCREEN_WEATHER_STYLE,LOCKSCREEN_WEATHER_STYLE_VALIDATOR);
             VALIDATORS.put(LOCKSCREEN_WEATHER_SHOW_TEMP, LOCKSCREEN_WEATHER_SHOW_TEMP_VALIDATOR);
             VALIDATORS.put(LOCKSCREEN_WEATHER_SHOW_CITY, LOCKSCREEN_WEATHER_SHOW_CITY_VALIDATOR);
+            VALIDATORS.put(SYNTHOS_ALIGN_LEFT_MARGIN, SYNTHOS_ALIGN_LEFT_MARGIN_VALIDATOR);
         }
 
         /**
