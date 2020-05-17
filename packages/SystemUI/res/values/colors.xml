@@ -220,8 +220,8 @@
    <color name="row_icon_white">@android:color/white</color>
 
     <color name="brightness_slider_progress">#FFFFFF</color>
-    <color name="brightness_slider_background">#99FFFFFF</color>
-    <color name="brightness_slider_icons">#00FFFFFF</color>
+    <color name="brightness_slider_background">#FFFFFF</color>
+    <color name="brightness_slider_icons">#FFFFFF</color>
 
     <color name="volume_background_tint_aospa">#f2f2f2</color>
     <color name="divider_stroke_color">#E0E0E0</color>
