@@ -1191,5 +1191,19 @@
     <dimen name="dismiss_all_button_margin_top">30dp</dimen>
     <dimen name="dismiss_all_button_width">55dp</dimen>
     <dimen name="dismiss_all_fab_src_size">24dp</dimen>
-    
+
+    <!-- Volume Panel AOSP Theme -->
+    <dimen name="volume_dialog_aosp_panel_transparent_padding_right">4dp</dimen>
+    <dimen name="volume_dialog_aosp_panel_transparent_padding">20dp</dimen>
+    <dimen name="volume_dialog_aosp_panel_width">64dp</dimen>
+    <dimen name="volume_dialog_aosp_ringer_size">64dp</dimen>
+    <dimen name="volume_dialog_aosp_ringer_icon_padding">20dp</dimen>
+    <dimen name="volume_dialog_aosp_caption_size">64dp</dimen>
+    <dimen name="volume_dialog_aosp_spacer">4dp</dimen>
+    <dimen name="volume_dialog_aosp_elevation">9dp</dimen>
+    <dimen name="volume_dialog_aosp_slider_margin_top">14dp</dimen>
+    <dimen name="volume_dialog_aosp_slider_margin_bottom">-2dp</dimen>
+    <dimen name="volume_dialog_aosp_tap_target_size">48dp</dimen>
+    <dimen name="volume_dialog_aosp_row_margin_bottom">8dp</dimen>
+
 </resources>

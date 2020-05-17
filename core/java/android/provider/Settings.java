@@ -6570,6 +6570,14 @@ public final class Settings {
         */
         public static final String SYNTHOS_VISUALIZER_QSPANEL = "synthos_visualizer_qspanel";
 
+
+        /**
+        * VolumePanel Themes
+        * by.tikkiX2
+        * @hide
+        */
+        public static final String SYNTHOS_VOLUME_PANEL_THEME = "synthos_volume_panel_theme";
+
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
