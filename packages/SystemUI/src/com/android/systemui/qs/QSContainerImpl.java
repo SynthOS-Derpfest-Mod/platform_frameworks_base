@@ -304,19 +304,19 @@ public class QSContainerImpl extends FrameLayout implements
     private void updateResources() {
         int topMargin = mContext.getResources().getDimensionPixelSize(
                 R.dimen.qs_panel_top_margin) + (mHeaderImageEnabled ?
-                mContext.getResources().getDimensionPixelSize(R.dimen.qs_header_image_offset) : 8);
+                mContext.getResources().getDimensionPixelSize(R.dimen.qs_header_image_offset) : 4);
 
         int statusBarSideMargin = mHeaderImageEnabled ? mContext.getResources().getDimensionPixelSize(
-                R.dimen.qs_header_image_side_margin) : 0;
+                R.dimen.qs_panel_image_side_margin) : 4;
 
         int gradientTopMargin = !mHeaderImageEnabled ? mContext.getResources().getDimensionPixelSize(
-                R.dimen.qs_panel_image_offset) : 0;
+                R.dimen.qs_header_image_offset) : 0;
 
         ((LayoutParams) mQSPanel.getLayoutParams()).topMargin = topMargin;
         mQSPanel.setLayoutParams(mQSPanel.getLayoutParams());
 
         ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mStatusBarBackground.getLayoutParams();
-        lp.height = topMargin;
+        //lp.height = topMargin;
         lp.setMargins(statusBarSideMargin, 0, statusBarSideMargin, 0);
         mStatusBarBackground.setLayoutParams(lp);
 
@@ -324,13 +324,16 @@ public class QSContainerImpl extends FrameLayout implements
         mlp.setMargins(0, gradientTopMargin, 0, 0);
         mBackgroundGradient.setLayoutParams(mlp);
 
-        if (mHeaderImageEnabled) {
-            mQsBackgroundAlpha = false;
-            mStatusBarBackground.setBackgroundColor(Color.TRANSPARENT);
-        } else {
-            mQsBackgroundAlpha = true;
-            mStatusBarBackground.setBackgroundColor(getResources().getColor(R.color.quick_settings_status_bar_background_color));
-        }
+        mQsBackgroundAlpha = false;
+        mStatusBarBackground.setBackgroundColor(Color.TRANSPARENT);
+
+        //if (mHeaderImageEnabled) {
+        //    mQsBackgroundAlpha = false;
+        //    mStatusBarBackground.setBackgroundColor(Color.TRANSPARENT);
+        //} else {
+        //    mQsBackgroundAlpha = true;
+        //    mStatusBarBackground.setBackgroundColor(getResources().getColor(R.color.quick_settings_status_bar_background_color));
+        //}
     }
 
     /**
