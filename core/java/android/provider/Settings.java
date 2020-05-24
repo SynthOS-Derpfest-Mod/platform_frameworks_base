@@ -6607,6 +6607,47 @@ public final class Settings {
         public static final String VOLUME_PANEL_ALIGNMENT = "volume_panel_alignment";
 
         /**
+        * Visualizer in QSPanel
+        * by.tikkiX2
+        * @hide
+        */
+        public static final String SYNTHOS_AMBIENT_TEXT = "synthos_ambient_text";
+
+        public static final String SYNTHOS_AMBIENT_TEXT_STRING = "synthos_ambient_text_string";
+
+        public static final String SYNTHOS_AMBIENT_TEXT_ANIMATION = "synthos_ambient_text_animation";
+
+        public static final String SYNTHOS_AMBIENT_TEXT_SIZE = "synthos_ambient_text_size";
+
+        public static final String SYNTHOS_AMBIENT_TEXT_FONT = "synthos_ambient_text_font";
+
+        public static final String SYNTHOS_AMBIENT_TEXT_ALIGNMENT = "synthos_ambient_text_alignment";
+
+        /**
+         * Ambient text color
+         * @hide
+         */
+        public static final String SYNTHOS_AMBIENT_TEXT_COLOR = "synthos_ambient_text_color";
+
+        private static final Validator SYNTHOS_AMBIENT_TEXT_COLOR_VALIDATOR =
+                ANY_INTEGER_VALIDATOR;
+
+        public static final String SYNTHOS_AMBIENT_TEXT_TYPE_COLOR = "synthos_ambient_text_type_color";
+
+        /** @hide */
+        private static final Validator SYNTHOS_AMBIENT_TEXT_TYPE_COLOR_VALIDATOR =
+                ANY_INTEGER_VALIDATOR;
+
+        /**
+        * Visualizer in QSPanel
+        * by.tikkiX2
+        * @hide
+        */
+        public static final String SYNTHOS_AMBIENT_IMAGE = "synthos_ambient_image";
+
+        public static final String SYNTHOS_AMBIENT_CUSTOM_IMAGE = "synthos_ambient_custom_image";
+
+        /**
         * Music Text in VolumePanel
         * by.tikkiX2
         * @hide
@@ -6871,6 +6912,8 @@ public final class Settings {
             BATTERY_BAR_LOW_COLOR,
             BATTERY_BAR_USE_GRADIENT_COLOR,
             SYNTHOS_ALIGN_LEFT_MARGIN,
+            SYNTHOS_AMBIENT_TEXT_COLOR,
+            SYNTHOS_AMBIENT_TEXT_TYPE_COLOR,
         };
 
         /**
@@ -7111,6 +7154,8 @@ public final class Settings {
             PRIVATE_SETTINGS.add(LOCKSCREEN_WEATHER_SHOW_TEMP);
             PRIVATE_SETTINGS.add(LOCKSCREEN_WEATHER_SHOW_CITY);
             PRIVATE_SETTINGS.add(SYNTHOS_ALIGN_LEFT_MARGIN);
+            PRIVATE_SETTINGS.add(SYNTHOS_AMBIENT_TEXT_COLOR);
+            PRIVATE_SETTINGS.add(SYNTHOS_AMBIENT_TEXT_TYPE_COLOR);
         }
 
         /**
@@ -7413,6 +7458,8 @@ public final class Settings {
             VALIDATORS.put(LOCKSCREEN_WEATHER_SHOW_TEMP, LOCKSCREEN_WEATHER_SHOW_TEMP_VALIDATOR);
             VALIDATORS.put(LOCKSCREEN_WEATHER_SHOW_CITY, LOCKSCREEN_WEATHER_SHOW_CITY_VALIDATOR);
             VALIDATORS.put(SYNTHOS_ALIGN_LEFT_MARGIN, SYNTHOS_ALIGN_LEFT_MARGIN_VALIDATOR);
+            VALIDATORS.put(SYNTHOS_AMBIENT_TEXT_COLOR, SYNTHOS_AMBIENT_TEXT_COLOR_VALIDATOR);
+            VALIDATORS.put(SYNTHOS_AMBIENT_TEXT_TYPE_COLOR, SYNTHOS_AMBIENT_TEXT_TYPE_COLOR_VALIDATOR);
         }
 
         /**
