@@ -5307,9 +5307,11 @@ public final class Settings {
          * Display style of the status bar battery information
          *    0: Display the battery as portrait icon (default)
          *    1: Display the battery as dotted circle
-         *    2: Display the battery as circle
-         *    3: Display the battery as text
-         *    4: Do not display the battery
+         *    2: Display the battery as PA circle
+         *    3: Display the battery as circle
+         *    4: Display the battery as big circle
+         *    5: Display the battery as text
+         *    6: Do not display the battery
          *    default: 0
          * @hide
          */
@@ -6057,7 +6059,8 @@ public final class Settings {
         public static final String STATUS_BAR_SHOW_TICKER = "status_bar_show_ticker";
 
         /** @hide */
-        private static final Validator STATUS_BAR_SHOW_TICKER_VALIDATOR = BOOLEAN_VALIDATOR;
+        private static final Validator STATUS_BAR_SHOW_TICKER_VALIDATOR =
+                new SettingsValidators.InclusiveIntegerRangeValidator(0, 2);
 
         /**
          * Ticker animation

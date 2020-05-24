@@ -190,4 +190,9 @@
     <dimen name="volume_panel_padding_99">99dp</dimen>
     <dimen name="volume_panel_padding_100">100dp</dimen>
 
+    <!-- Height of the big battery circle icon in the status bar. -->
+    <dimen name="status_bar_battery_bigcircle_icon_height">20.5dp</dimen>
+    <!-- Width of the big battery circle icon in the status bar. -->
+    <dimen name="status_bar_battery_bigcircle_icon_width">20.5dp</dimen>
+
 </resources>
