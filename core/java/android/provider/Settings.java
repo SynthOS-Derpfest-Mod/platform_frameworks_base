@@ -6947,6 +6947,13 @@ public final class Settings {
         public static final String SYNTHOS_VISUALIZER_QSPANEL = "synthos_visualizer_qspanel";
 
         /**
+        * Music Text in VolumePanel
+        * by.tikkiX2
+        * @hide
+        */
+        public static final String SYNTHOS_MUSIC_VOLUME_PANEL_TEXT = "synthos_music_volume_panel_text";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
