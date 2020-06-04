@@ -21,25 +21,26 @@ import static android.view.Surface.ROTATION_90;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
-import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER;
 
 import static com.android.systemui.tuner.TunablePadding.FLAG_END;
 import static com.android.systemui.tuner.TunablePadding.FLAG_START;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.annotation.Dimension;
+import android.annotation.NonNull;
 import android.app.ActivityManager;
 import android.app.Fragment;
 import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
-import android.database.ContentObserver;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -47,15 +48,15 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.Region;
+import android.graphics.drawable.VectorDrawable;
 import android.hardware.display.DisplayManager;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.SystemProperties;
 import android.os.UserHandle;
 import android.provider.Settings.Secure;
-import android.provider.Settings.System;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.MathUtils;
@@ -112,9 +113,11 @@ public class ScreenDecorations extends SystemUI implements Tunable,
     private static final boolean DEBUG_SCREENSHOT_ROUNDED_CORNERS =
             SystemProperties.getBoolean("debug.screenshot_rounded_corners", false);
     private static final boolean VERBOSE = false;
+    private static final boolean DEBUG_COLOR = DEBUG_SCREENSHOT_ROUNDED_CORNERS;
 
     private DisplayManager mDisplayManager;
     private DisplayManager.DisplayListener mDisplayListener;
+    private CameraAvailabilityListener mCameraListener;
 
     @VisibleForTesting
     protected int mRoundedDefault;
@@ -136,8 +139,26 @@ public class ScreenDecorations extends SystemUI implements Tunable,
     private boolean mAssistHintBlocked = false;
     private boolean mIsReceivingNavBarColor = false;
     private boolean mInGesturalMode;
+    private boolean mIsRoundedCornerMultipleRadius;
 
-    private boolean mImmerseMode;
+    private CameraAvailabilityListener.CameraTransitionCallback mCameraTransitionCallback =
+            new CameraAvailabilityListener.CameraTransitionCallback() {
+        @Override
+        public void onApplyCameraProtection(@NonNull Path protectionPath, @NonNull Rect bounds) {
+            // Show the extra protection around the front facing camera if necessary
+            mCutoutTop.setProtection(protectionPath, bounds);
+            mCutoutTop.setShowProtection(true);
+            mCutoutBottom.setProtection(protectionPath, bounds);
+            mCutoutBottom.setShowProtection(true);
+        }
+
+        @Override
+        public void onHideCameraProtection() {
+            // Go back to the regular anti-aliasing
+            mCutoutTop.setShowProtection(false);
+            mCutoutBottom.setShowProtection(false);
+        }
+    };
 
     /**
      * Converts a set of {@link Rect}s into a {@link Region}
@@ -158,8 +179,6 @@ public class ScreenDecorations extends SystemUI implements Tunable,
 
     @Override
     public void start() {
-        mImmerseMode = System.getIntForUser(mContext.getContentResolver(),
-                        System.DISPLAY_CUTOUT_MODE, 0, UserHandle.USER_CURRENT) == 1;
         mHandler = startHandlerThread();
         mHandler.post(this::startOnScreenDecorationsThread);
         setupStatusBarPaddingIfNeeded();
@@ -167,8 +186,6 @@ public class ScreenDecorations extends SystemUI implements Tunable,
         mInGesturalMode = QuickStepContract.isGesturalMode(
                 Dependency.get(NavigationModeController.class)
                         .addListener(this::handleNavigationModeChange));
-        mCustomSettingsObserver.observe();
-        mCustomSettingsObserver.update();
     }
 
     @VisibleForTesting
@@ -336,7 +353,8 @@ public class ScreenDecorations extends SystemUI implements Tunable,
     private void startOnScreenDecorationsThread() {
         mRotation = RotationUtils.getExactRotation(mContext);
         mWindowManager = mContext.getSystemService(WindowManager.class);
-
+        mIsRoundedCornerMultipleRadius = mContext.getResources().getBoolean(
+                R.bool.config_roundedCornerMultipleRadius);
         updateRoundedCornerRadii();
 
         Dependency.get(Dependency.MAIN_HANDLER).post(
@@ -344,6 +362,7 @@ public class ScreenDecorations extends SystemUI implements Tunable,
 
         if (hasRoundedCorners() || shouldDrawCutout() || shouldHostHandles()) {
             setupDecorations();
+            setupCameraListener();
         }
 
         mDisplayListener = new DisplayManager.DisplayListener() {
@@ -390,12 +409,6 @@ public class ScreenDecorations extends SystemUI implements Tunable,
     }
 
     private void setupDecorations() {
-        // Get rid of all views to redraw with new layout params
-        if (mOverlay != null)
-            mWindowManager.removeView(mOverlay);
-        if (mBottomOverlay != null)
-            mWindowManager.removeView(mBottomOverlay);
-
         mOverlay = LayoutInflater.from(mContext)
                 .inflate(R.layout.rounded_corners, null);
         mCutoutTop = new DisplayCutoutView(mContext, true,
@@ -462,6 +475,16 @@ public class ScreenDecorations extends SystemUI implements Tunable,
                 new ValidatingPreDrawListener(mBottomOverlay));
     }
 
+    private void setupCameraListener() {
+        Resources res = mContext.getResources();
+        boolean enabled = res.getBoolean(R.bool.config_enableDisplayCutoutProtection);
+        if (enabled) {
+            mCameraListener = CameraAvailabilityListener.Factory.build(mContext, mHandler::post);
+            mCameraListener.addTransitionCallback(mCameraTransitionCallback);
+            mCameraListener.startListening();
+        }
+    }
+
     private final BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -478,6 +501,9 @@ public class ScreenDecorations extends SystemUI implements Tunable,
 
     private void updateColorInversion(int colorsInvertedValue) {
         int tint = colorsInvertedValue != 0 ? Color.WHITE : Color.BLACK;
+        if (DEBUG_COLOR) {
+            tint = Color.RED;
+        }
         ColorStateList tintList = ColorStateList.valueOf(tint);
         ((ImageView) mOverlay.findViewById(R.id.left)).setImageTintList(tintList);
         ((ImageView) mOverlay.findViewById(R.id.right)).setImageTintList(tintList);
@@ -506,7 +532,6 @@ public class ScreenDecorations extends SystemUI implements Tunable,
                 updateLayoutParams();
             }
         });
-        updateCutoutMode();
     }
 
     private void updateOrientation() {
@@ -550,15 +575,22 @@ public class ScreenDecorations extends SystemUI implements Tunable,
                 com.android.internal.R.dimen.rounded_corner_radius_top);
         final int newRoundedDefaultBottom = mContext.getResources().getDimensionPixelSize(
                 com.android.internal.R.dimen.rounded_corner_radius_bottom);
-
         final boolean roundedCornersChanged = mRoundedDefault != newRoundedDefault
                 || mRoundedDefaultBottom != newRoundedDefaultBottom
                 || mRoundedDefaultTop != newRoundedDefaultTop;
 
         if (roundedCornersChanged) {
-            mRoundedDefault = newRoundedDefault;
-            mRoundedDefaultTop = newRoundedDefaultTop;
-            mRoundedDefaultBottom = newRoundedDefaultBottom;
+            // If config_roundedCornerMultipleRadius set as true, ScreenDecorations respect the
+            // max(width, height) size of drawable/rounded.xml instead of rounded_corner_radius
+            if (mIsRoundedCornerMultipleRadius) {
+                final VectorDrawable d = (VectorDrawable) mContext.getDrawable(R.drawable.rounded);
+                mRoundedDefault = Math.max(d.getIntrinsicWidth(), d.getIntrinsicHeight());
+                mRoundedDefaultTop = mRoundedDefaultBottom = mRoundedDefault;
+            } else {
+                mRoundedDefault = newRoundedDefault;
+                mRoundedDefaultTop = newRoundedDefaultTop;
+                mRoundedDefaultBottom = newRoundedDefaultBottom;
+            }
             onTuningChanged(SIZE, null);
         }
     }
@@ -659,7 +691,7 @@ public class ScreenDecorations extends SystemUI implements Tunable,
     }
 
     private boolean hasRoundedCorners() {
-        return mRoundedDefault > 0 || mRoundedDefaultBottom > 0 || mRoundedDefaultTop > 0 ||
+        return mRoundedDefault > 0 || mRoundedDefaultBottom > 0 || mRoundedDefaultTop > 0 || mIsRoundedCornerMultipleRadius ||
                 Secure.getIntForUser(mContext.getContentResolver(), SIZE, 0, UserHandle.USER_CURRENT) != 0;
     }
 
@@ -725,10 +757,7 @@ public class ScreenDecorations extends SystemUI implements Tunable,
         } else {
             lp.gravity = Gravity.TOP | Gravity.LEFT;
         }
-        if (mImmerseMode)
-            lp.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER;
-        else
-            lp.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
+        lp.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
         if (isLandscape(mRotation)) {
             lp.width = WRAP_CONTENT;
             lp.height = MATCH_PARENT;
@@ -787,50 +816,6 @@ public class ScreenDecorations extends SystemUI implements Tunable,
                 setSize(mBottomOverlay.findViewById(R.id.right), sizeBottom);
             }
         });
-    }
-
-    private CustomSettingsObserver mCustomSettingsObserver = new CustomSettingsObserver(mHandler);
-    private class CustomSettingsObserver extends ContentObserver {
-        CustomSettingsObserver(Handler handler) {
-            super(handler);
-        }
-
-        void observe() {
-            ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(System.getUriFor(
-                    System.DISPLAY_CUTOUT_MODE), false, this);
-        }
-
-        @Override
-        public void onChange(boolean selfChange, Uri uri) {
-            if (uri.equals(System.getUriFor(System.DISPLAY_CUTOUT_MODE))) {
-                updateCutoutMode();
-            }
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            update();
-        }
-
-        public void update() {
-            updateCutoutMode();
-        }
-    }
-
-    private void updateCutoutMode() {
-        boolean newImmerseMode;
-        if (mRotation == RotationUtils.ROTATION_LANDSCAPE ||
-                mRotation == RotationUtils.ROTATION_SEASCAPE)
-            newImmerseMode = false;
-        else
-            newImmerseMode = System.getIntForUser(mContext.getContentResolver(),
-                        System.DISPLAY_CUTOUT_MODE, 0, UserHandle.USER_CURRENT) == 1;
-        if (mImmerseMode != newImmerseMode) {
-            mImmerseMode = newImmerseMode;
-            mHandler.removeCallbacksAndMessages(null);
-            mHandler.post(this::startOnScreenDecorationsThread);
-        }
     }
 
     private void setSize(View view, int pixelSize) {
@@ -919,11 +904,22 @@ public class ScreenDecorations extends SystemUI implements Tunable,
     public static class DisplayCutoutView extends View implements DisplayManager.DisplayListener,
             RegionInterceptableView {
 
+        private static final float HIDDEN_CAMERA_PROTECTION_SCALE = 0.5f;
+
         private final DisplayInfo mInfo = new DisplayInfo();
         private final Paint mPaint = new Paint();
         private final List<Rect> mBounds = new ArrayList();
         private final Rect mBoundingRect = new Rect();
         private final Path mBoundingPath = new Path();
+        // Don't initialize these yet because they may never exist
+        private RectF mProtectionRect;
+        private RectF mProtectionRectOrig;
+        private Path mProtectionPath;
+        private Path mProtectionPathOrig;
+        private Rect mTotalBounds = new Rect();
+        // Whether or not to show the cutout protection path
+        private boolean mShowProtection = false;
+
         private final int[] mLocation = new int[2];
         private final boolean mInitialStart;
         private final Runnable mVisibilityChangedListener;
@@ -931,6 +927,8 @@ public class ScreenDecorations extends SystemUI implements Tunable,
         private int mColor = Color.BLACK;
         private boolean mStart;
         private int mRotation;
+        private float mCameraProtectionProgress = HIDDEN_CAMERA_PROTECTION_SCALE;
+        private ValueAnimator mCameraProtectionAnimator;
 
         public DisplayCutoutView(Context context, boolean start,
                 Runnable visibilityChangedListener, ScreenDecorations decorations) {
@@ -970,11 +968,18 @@ public class ScreenDecorations extends SystemUI implements Tunable,
             super.onDraw(canvas);
             getLocationOnScreen(mLocation);
             canvas.translate(-mLocation[0], -mLocation[1]);
+
             if (!mBoundingPath.isEmpty()) {
                 mPaint.setColor(mColor);
                 mPaint.setStyle(Paint.Style.FILL);
                 mPaint.setAntiAlias(true);
                 canvas.drawPath(mBoundingPath, mPaint);
+            }
+            if (mCameraProtectionProgress > HIDDEN_CAMERA_PROTECTION_SCALE
+                    && !mProtectionRect.isEmpty()) {
+                canvas.scale(mCameraProtectionProgress, mCameraProtectionProgress,
+                        mProtectionRect.centerX(), mProtectionRect.centerY());
+                canvas.drawPath(mProtectionPath, mPaint);
             }
         }
 
@@ -996,6 +1001,53 @@ public class ScreenDecorations extends SystemUI implements Tunable,
         public void setRotation(int rotation) {
             mRotation = rotation;
             update();
+        }
+
+        void setProtection(Path protectionPath, Rect pathBounds) {
+            if (mProtectionPathOrig == null) {
+                mProtectionPathOrig = new Path();
+                mProtectionPath = new Path();
+            }
+            mProtectionPathOrig.set(protectionPath);
+            if (mProtectionRectOrig == null) {
+                mProtectionRectOrig = new RectF();
+                mProtectionRect = new RectF();
+            }
+            mProtectionRectOrig.set(pathBounds);
+        }
+
+        void setShowProtection(boolean shouldShow) {
+            if (mShowProtection == shouldShow) {
+                return;
+            }
+
+            mShowProtection = shouldShow;
+            updateBoundingPath();
+            // Delay the relayout until the end of the animation when hiding the cutout,
+            // otherwise we'd clip it.
+            if (mShowProtection) {
+                requestLayout();
+            }
+            if (mCameraProtectionAnimator != null) {
+                mCameraProtectionAnimator.cancel();
+            }
+            mCameraProtectionAnimator = ValueAnimator.ofFloat(mCameraProtectionProgress,
+                    mShowProtection ? 1.0f : HIDDEN_CAMERA_PROTECTION_SCALE).setDuration(750);
+            mCameraProtectionAnimator.setInterpolator(Interpolators.DECELERATE_QUINT);
+            mCameraProtectionAnimator.addUpdateListener(animation -> {
+                mCameraProtectionProgress = (float) animation.getAnimatedValue();
+                invalidate();
+            });
+            mCameraProtectionAnimator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mCameraProtectionAnimator = null;
+                    if (!mShowProtection) {
+                        requestLayout();
+                    }
+                }
+            });
+            mCameraProtectionAnimator.start();
         }
 
         private boolean isStart() {
@@ -1044,6 +1096,12 @@ public class ScreenDecorations extends SystemUI implements Tunable,
             Matrix m = new Matrix();
             transformPhysicalToLogicalCoordinates(mInfo.rotation, dw, dh, m);
             mBoundingPath.transform(m);
+            if (mProtectionPathOrig != null) {
+                // Reset the protection path so we don't aggregate rotations
+                mProtectionPath.set(mProtectionPathOrig);
+                mProtectionPath.transform(m);
+                m.mapRect(mProtectionRect, mProtectionRectOrig);
+            }
         }
 
         private static void transformPhysicalToLogicalCoordinates(@Surface.Rotation int rotation,
@@ -1101,9 +1159,20 @@ public class ScreenDecorations extends SystemUI implements Tunable,
                 super.onMeasure(widthMeasureSpec, heightMeasureSpec);
                 return;
             }
-            setMeasuredDimension(
-                    resolveSizeAndState(mBoundingRect.width(), widthMeasureSpec, 0),
-                    resolveSizeAndState(mBoundingRect.height(), heightMeasureSpec, 0));
+
+            if (mShowProtection) {
+                // Make sure that our measured height encompases the protection
+                mTotalBounds.union(mBoundingRect);
+                mTotalBounds.union((int) mProtectionRect.left, (int) mProtectionRect.top,
+                        (int) mProtectionRect.right, (int) mProtectionRect.bottom);
+                setMeasuredDimension(
+                        resolveSizeAndState(mTotalBounds.width(), widthMeasureSpec, 0),
+                        resolveSizeAndState(mTotalBounds.height(), heightMeasureSpec, 0));
+            } else {
+                setMeasuredDimension(
+                        resolveSizeAndState(mBoundingRect.width(), widthMeasureSpec, 0),
+                        resolveSizeAndState(mBoundingRect.height(), heightMeasureSpec, 0));
+            }
         }
 
         public static void boundsFromDirection(DisplayCutout displayCutout, int gravity,

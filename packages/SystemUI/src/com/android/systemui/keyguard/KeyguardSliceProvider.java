@@ -476,7 +476,9 @@ public class KeyguardSliceProvider extends SliceProvider implements
             mWeatherClient.addSettingsObserver();
             mWeatherClient.addObserver(this);
             queryAndUpdateWeather();
-            mPendingIntent = PendingIntent.getActivity(getContext(), 0, new Intent(), 0);
+            mDatePattern = getContext().getString(R.string.system_ui_aod_date_pattern);
+            mPendingIntent = PendingIntent.getActivity(getContext(), 0,
+                    new Intent(getContext(), KeyguardSliceProvider.class), 0);
             mMediaWakeLock = new SettableWakeLock(WakeLock.createPartial(getContext(), "media"),
                     "media");
             KeyguardSliceProvider.sInstance = this;
