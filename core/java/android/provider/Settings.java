@@ -4527,21 +4527,6 @@ public final class Settings {
         /**
          * @hide
          */
-        public static final String FLASH_ON_CALL_WAITING = "flash_on_call_waiting";
-        /** @hide */
-        private static final Validator FLASH_ON_CALL_WAITING_VALIDATOR = BOOLEAN_VALIDATOR;
-
-        /**
-         * @hide
-         */
-        public static final String FLASH_ON_CALLWAITING_DELAY = "flash_on_call_waiting_delay";
-        /** @hide */
-        private static final Validator FLASH_ON_CALLWAITING_DELAY_VALIDATOR =
-                ANY_INTEGER_VALIDATOR;
-
-        /**
-         * @hide
-         */
         public static final String DEVICE_FEATURE_SETTINGS = "device_feature_settings";
 
         /**
@@ -4641,6 +4626,31 @@ public final class Settings {
         /** @hide */
         private static final Validator VIBRATE_ON_DISCONNECT_VALIDATOR =
                 BOOLEAN_VALIDATOR;
+
+        /**
+         * Which Vibration Pattern to use
+         * 0: dzzz-dzzz
+         * 1: dzzz-da
+         * 2: mm-mm-mm
+         * 3: da-da-dzzz
+         * 4: da-dzzz-da
+         * 5: custom
+         * @hide
+         */
+        public static final String RINGTONE_VIBRATION_PATTERN = "ringtone_vibration_pattern";
+        /** @hide */
+        private static final Validator RINGTONE_VIBRATION_PATTERN_VALIDATOR =
+                new SettingsValidators.InclusiveIntegerRangeValidator(0, 5);
+
+        /**
+         * Custom vibration pattern
+         * format: ms,ms,ms each a range from 0 to 1000 ms
+         * @hide
+         */
+        public static final String CUSTOM_RINGTONE_VIBRATION_PATTERN = "custom_ringtone_vibration_pattern";
+        /** @hide */
+        private static final Validator CUSTOM_RINGTONE_VIBRATION_PATTERN_VALIDATOR =
+                ANY_STRING_VALIDATOR;
 
         /**
          * Whether to enable gaming mode or not
@@ -6446,6 +6456,50 @@ public final class Settings {
         private static final Validator REFRESH_RATE_SETTING_VALIDATOR = NON_NEGATIVE_INTEGER_VALIDATOR;
 
         /**
+         * Whether to blink flashlight for incoming calls
+         * 0 = Disabled (Default)
+         * 1 = Blink flashlight only in Ringer mode
+         * 2 = Blink flashlight only when ringer is not audible
+         * 3 = Blink flahslight only when entirely silent
+         * 4 = Blink flashlight always regardless of ringer mode
+         * @hide
+         */
+        public static final String FLASHLIGHT_ON_CALL = "flashlight_on_call";
+        /** @hide */
+        private static final Validator FLASHLIGHT_ON_CALL_VALIDATOR =
+                new SettingsValidators.InclusiveIntegerRangeValidator(0, 4);
+
+        /**
+         * Whether flashlight_on_call ignores DND (Zen Mode)
+         * @hide
+         */
+        public static final String FLASHLIGHT_ON_CALL_IGNORE_DND = "flashlight_on_call_ignore_dnd";
+        /** @hide */
+        private static final Validator FLASHLIGHT_ON_CALL_IGNORE_DND_VALIDATOR =
+                BOOLEAN_VALIDATOR;
+
+        /**
+         * Rate in Hz in which to blink flashlight_on_call
+         * @hide
+         */
+        public static final String FLASHLIGHT_ON_CALL_RATE = "flashlight_on_call_rate";
+        /** @hide */
+        private static final Validator FLASHLIGHT_ON_CALL_RATE_VALIDATOR =
+                new SettingsValidators.InclusiveIntegerRangeValidator(1, 5);
+
+        /**
+         * Show data usage in QS header
+         * 0 = Disabled
+         * 1 = Show daily usage
+         * 2 = Show monthly usage
+         * @hide
+         */
+        public static final String QS_DATAUSAGE = "qs_datausage";
+        /** @hide */
+        private static final Validator QS_DATAUSAGE_VALIDATOR =
+                new SettingsValidators.InclusiveIntegerRangeValidator(0, 2);
+
+        /**
          * DismissAll Button
          * @hide
          */
@@ -6849,13 +6903,13 @@ public final class Settings {
             VIBRATE_ON_CONNECT,
             VIBRATE_ON_CALLWAITING,
             VIBRATE_ON_DISCONNECT,
+            RINGTONE_VIBRATION_PATTERN,
+            CUSTOM_RINGTONE_VIBRATION_PATTERN,
             DOZE_ON_CHARGE,
             USE_OLD_MOBILETYPE,
             PULSE_BRIGHTNESS,
             QS_PANEL_BG_ALPHA,
             DOZE_BRIGHTNESS,
-            FLASH_ON_CALL_WAITING,
-            FLASH_ON_CALLWAITING_DELAY,
             NETWORK_TRAFFIC_STATE,
             NETWORK_TRAFFIC_VIEW_LOCATION,
             NETWORK_TRAFFIC_TYPE,
@@ -6923,6 +6977,10 @@ public final class Settings {
             BATTERY_BAR_HIGH_COLOR,
             BATTERY_BAR_LOW_COLOR,
             BATTERY_BAR_USE_GRADIENT_COLOR,
+            FLASHLIGHT_ON_CALL,
+            FLASHLIGHT_ON_CALL_IGNORE_DND,
+            FLASHLIGHT_ON_CALL_RATE,
+            QS_DATAUSAGE,
             SYNTHOS_ALIGN_LEFT_MARGIN,
             SYNTHOS_AMBIENT_TEXT_COLOR,
             SYNTHOS_AMBIENT_TEXT_TYPE_COLOR,
@@ -7160,6 +7218,10 @@ public final class Settings {
             PRIVATE_SETTINGS.add(DISPLAY_CUTOUT_MODE);
             PRIVATE_SETTINGS.add(STOCK_STATUSBAR_IN_HIDE);
             PRIVATE_SETTINGS.add(REFRESH_RATE_SETTING);
+            PRIVATE_SETTINGS.add(FLASHLIGHT_ON_CALL);
+            PRIVATE_SETTINGS.add(FLASHLIGHT_ON_CALL_IGNORE_DND);
+            PRIVATE_SETTINGS.add(FLASHLIGHT_ON_CALL_RATE);
+            PRIVATE_SETTINGS.add(QS_DATAUSAGE);
             PRIVATE_SETTINGS.add(BRIGHTNESS_SLIDER_QS_UNEXPANDED);
             PRIVATE_SETTINGS.add(OMNIJAWS_WEATHER_ICON_PACK);
             PRIVATE_SETTINGS.add(OMNI_LOCKSCREEN_WEATHER_ENABLED);
@@ -7390,6 +7452,8 @@ public final class Settings {
             VALIDATORS.put(VIBRATE_ON_CONNECT, VIBRATE_ON_CONNECT_VALIDATOR);
             VALIDATORS.put(VIBRATE_ON_CALLWAITING, VIBRATE_ON_CALLWAITING_VALIDATOR);
             VALIDATORS.put(VIBRATE_ON_DISCONNECT, VIBRATE_ON_DISCONNECT_VALIDATOR);
+            VALIDATORS.put(RINGTONE_VIBRATION_PATTERN, RINGTONE_VIBRATION_PATTERN_VALIDATOR);
+            VALIDATORS.put(CUSTOM_RINGTONE_VIBRATION_PATTERN, CUSTOM_RINGTONE_VIBRATION_PATTERN_VALIDATOR);
             VALIDATORS.put(DOZE_ON_CHARGE, DOZE_ON_CHARGE_VALIDATOR);
             VALIDATORS.put(NOTIFICATION_SOUND_VIB_SCREEN_ON,
                     NOTIFICATION_SOUND_VIB_SCREEN_ON_VALIDATOR);
@@ -7397,8 +7461,6 @@ public final class Settings {
             VALIDATORS.put(QS_PANEL_BG_ALPHA, QS_PANEL_BG_ALPHA_VALIDATOR);
             VALIDATORS.put(PULSE_BRIGHTNESS, PULSE_BRIGHTNESS_VALIDATOR);
             VALIDATORS.put(DOZE_BRIGHTNESS, DOZE_BRIGHTNESS_VALIDATOR);
-            VALIDATORS.put(FLASH_ON_CALL_WAITING, FLASH_ON_CALL_WAITING_VALIDATOR);
-            VALIDATORS.put(FLASH_ON_CALLWAITING_DELAY, FLASH_ON_CALLWAITING_DELAY_VALIDATOR);
             VALIDATORS.put(NETWORK_TRAFFIC_STATE, NETWORK_TRAFFIC_STATE_VALIDATOR);
             VALIDATORS.put(NETWORK_TRAFFIC_TYPE, NETWORK_TRAFFIC_TYPE_VALIDATOR);
             VALIDATORS.put(NETWORK_TRAFFIC_AUTOHIDE_THRESHOLD, NETWORK_TRAFFIC_AUTOHIDE_THRESHOLD_VALIDATOR);
@@ -7464,7 +7526,11 @@ public final class Settings {
             VALIDATORS.put(BATTERY_BAR_HIGH_COLOR, BATTERY_BAR_HIGH_COLOR_VALIDATOR);
             VALIDATORS.put(BATTERY_BAR_LOW_COLOR, BATTERY_BAR_LOW_COLOR_VALIDATOR);
             VALIDATORS.put(BATTERY_BAR_USE_GRADIENT_COLOR, BATTERY_BAR_USE_GRADIENT_COLOR_VALIDATOR);
-	      VALIDATORS.put(REFRESH_RATE_SETTING, REFRESH_RATE_SETTING_VALIDATOR);
+            VALIDATORS.put(REFRESH_RATE_SETTING, REFRESH_RATE_SETTING_VALIDATOR);
+            VALIDATORS.put(FLASHLIGHT_ON_CALL, FLASHLIGHT_ON_CALL_VALIDATOR);
+            VALIDATORS.put(FLASHLIGHT_ON_CALL_IGNORE_DND, FLASHLIGHT_ON_CALL_IGNORE_DND_VALIDATOR);
+            VALIDATORS.put(FLASHLIGHT_ON_CALL_RATE, FLASHLIGHT_ON_CALL_RATE_VALIDATOR);
+            VALIDATORS.put(QS_DATAUSAGE, QS_DATAUSAGE_VALIDATOR);
             VALIDATORS.put(BRIGHTNESS_SLIDER_QS_UNEXPANDED, BRIGHTNESS_SLIDER_QS_UNEXPANDED_VALIDATOR);
             VALIDATORS.put(OMNIJAWS_WEATHER_ICON_PACK,OMNIJAWS_WEATHER_ICON_PACK_VALIDATOR);
             VALIDATORS.put(OMNI_LOCKSCREEN_WEATHER_ENABLED,OMNI_LOCKSCREEN_WEATHER_ENABLED_VALIDATOR);
