@@ -38,6 +38,8 @@ import com.android.systemui.statusbar.NotificationMediaManager;
 import com.android.systemui.statusbar.policy.ExtensionController;
 import com.android.systemui.tuner.TunerService;
 
+import com.android.prophet.iota.Iota;
+
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 
@@ -59,6 +61,7 @@ public class VolumeDialogComponent implements VolumeComponent, TunerService.Tuna
     protected final Context mContext;
     private final VolumeDialogControllerImpl mController;
     private NotificationMediaManager mMediaManager;
+    private int mVolumeTheme;
     private final InterestingConfigChanges mConfigChanges = new InterestingConfigChanges(
             ActivityInfo.CONFIG_FONT_SCALE | ActivityInfo.CONFIG_LOCALE
             | ActivityInfo.CONFIG_ASSETS_PATHS | ActivityInfo.CONFIG_UI_MODE);
@@ -73,6 +76,7 @@ public class VolumeDialogComponent implements VolumeComponent, TunerService.Tuna
     public VolumeDialogComponent(SystemUI sysui, Context context) {
         mSysui = sysui;
         mContext = context;
+        mVolumeTheme = Dependency.get(Iota.class).getVolumeTheme();
         mController = (VolumeDialogControllerImpl) Dependency.get(VolumeDialogController.class);
         mController.setUserActivityListener(this);
         // Allow plugins to reference the VolumeDialogController.
@@ -94,12 +98,35 @@ public class VolumeDialogComponent implements VolumeComponent, TunerService.Tuna
     }
 
     protected VolumeDialog createDefault() {
-        VolumeDialogImpl impl = new VolumeDialogImpl(mContext);
-        impl.setStreamImportant(AudioManager.STREAM_SYSTEM, false);
-        impl.setAutomute(true);
-        impl.setSilentMode(false);
-        impl.initText(mMediaManager);
-        return impl;
+
+        if (mVolumeTheme == 0) {
+            VolumeDialogImpl impl = new VolumeDialogImpl(mContext);
+            impl.setStreamImportant(AudioManager.STREAM_SYSTEM, false);
+            impl.setAutomute(true);
+            impl.setSilentMode(false);
+            impl.initDependencies(mMediaManager);
+            return impl;
+        } else if (mVolumeTheme == 1) {
+            VolumeDialogImplAOSP impl = new VolumeDialogImplAOSP(mContext);
+            impl.setStreamImportant(AudioManager.STREAM_SYSTEM, false);
+            impl.setAutomute(true);
+            impl.setSilentMode(false);
+            return impl;
+        } else if (mVolumeTheme == 2) {
+            VolumeDialogImplAOSPRounded impl = new VolumeDialogImplAOSPRounded(mContext);
+            impl.setStreamImportant(AudioManager.STREAM_SYSTEM, false);
+            impl.setAutomute(true);
+            impl.setSilentMode(false);
+            return impl;
+        } else if (mVolumeTheme == 3) {
+            VolumeDialogImplAOSPA impl = new VolumeDialogImplAOSPA(mContext);
+            impl.setStreamImportant(AudioManager.STREAM_SYSTEM, false);
+            impl.setAutomute(true);
+            impl.setSilentMode(false);
+            return impl;
+        }
+
+        return null;
     }
 
     @Override
