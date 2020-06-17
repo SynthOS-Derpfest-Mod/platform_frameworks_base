@@ -122,6 +122,8 @@ import dagger.Subcomponent;
 
 import com.google.android.systemui.AssistManagerGoogle;
 
+import com.android.prophet.gamma.Gamma;
+
 /**
  * Class to handle ugly dependencies throughout sysui until we determine the
  * long-term dependency injection solution.
@@ -297,6 +299,7 @@ public class Dependency {
     @Inject Lazy<ChannelEditorDialogController> mChannelEditorDialogController;
     @Inject Lazy<INotificationManager> mINotificationManager;
     @Inject Lazy<FalsingManager> mFalsingManager;
+    @Inject Lazy<Gamma> mGamma;
 
     @Inject
     public Dependency() {
@@ -485,6 +488,7 @@ public class Dependency {
         mProviders.put(ChannelEditorDialogController.class, mChannelEditorDialogController::get);
         mProviders.put(INotificationManager.class, mINotificationManager::get);
         mProviders.put(FalsingManager.class, mFalsingManager::get);
+        mProviders.put(Gamma.class, mGamma::get);
 
         // TODO(b/118592525): to support multi-display , we start to add something which is
         //                    per-display, while others may be global. I think it's time to add
