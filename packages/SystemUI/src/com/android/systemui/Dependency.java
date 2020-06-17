@@ -122,6 +122,7 @@ import dagger.Subcomponent;
 
 import com.google.android.systemui.AssistManagerGoogle;
 
+import com.android.prophet.iota.Iota;
 import com.android.prophet.gamma.Gamma;
 
 /**
@@ -299,6 +300,7 @@ public class Dependency {
     @Inject Lazy<ChannelEditorDialogController> mChannelEditorDialogController;
     @Inject Lazy<INotificationManager> mINotificationManager;
     @Inject Lazy<FalsingManager> mFalsingManager;
+    @Inject Lazy<Iota> mIota;
     @Inject Lazy<Gamma> mGamma;
 
     @Inject
@@ -488,6 +490,7 @@ public class Dependency {
         mProviders.put(ChannelEditorDialogController.class, mChannelEditorDialogController::get);
         mProviders.put(INotificationManager.class, mINotificationManager::get);
         mProviders.put(FalsingManager.class, mFalsingManager::get);
+        mProviders.put(Iota.class, mIota::get);
         mProviders.put(Gamma.class, mGamma::get);
 
         // TODO(b/118592525): to support multi-display , we start to add something which is
