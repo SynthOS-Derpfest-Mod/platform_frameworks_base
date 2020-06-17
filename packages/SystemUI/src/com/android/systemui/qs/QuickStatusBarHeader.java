@@ -61,7 +61,7 @@ import android.widget.TextView;
 import android.widget.TextClock;
 
 import androidx.annotation.VisibleForTesting;
-
+import com.android.internal.util.aosip.aosipUtils;
 import com.android.settingslib.Utils;
 import com.android.systemui.BatteryMeterView;
 import com.android.systemui.Dependency;
@@ -71,6 +71,7 @@ import com.android.systemui.plugins.ActivityStarter;
 import com.android.systemui.plugins.DarkIconDispatcher;
 import com.android.systemui.plugins.DarkIconDispatcher.DarkReceiver;
 import com.android.systemui.qs.QSDetail.Callback;
+import com.android.systemui.statusbar.info.DataUsageView;
 import com.android.systemui.omni.CurrentWeatherView;
 import com.android.systemui.statusbar.phone.PhoneStatusBarView;
 import com.android.systemui.statusbar.phone.StatusBarIconController;
@@ -134,6 +135,11 @@ public class QuickStatusBarHeader extends RelativeLayout implements
     private int mRingerMode = AudioManager.RINGER_MODE_NORMAL;
     private AlarmManager.AlarmClockInfo mNextAlarm;
 
+    // Data Usage
+    private View mDataUsageLayout;
+    private ImageView mDataUsageImage;
+    private DataUsageView mDataUsageView;
+
     private ImageView mNextAlarmIcon;
     /** {@link TextView} containing the actual text indicating when the next alarm will go off. */
     private TextView mNextAlarmTextView;
@@ -186,6 +192,9 @@ public class QuickStatusBarHeader extends RelativeLayout implements
                     this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System
                     .getUriFor(Settings.System.OMNI_STATUS_BAR_FILE_HEADER_IMAGE), false,
+                    this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.QS_DATAUSAGE), false,
                     this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System
                     .getUriFor(Settings.System.SYNTHUI_QSEXPANDED_TEXT_SHOW), false,
@@ -319,6 +328,9 @@ public class QuickStatusBarHeader extends RelativeLayout implements
         mClockView.setQsHeader();
         mDateView = findViewById(R.id.date);
         mDateView.setOnClickListener(this);
+        mDataUsageLayout = findViewById(R.id.daily_data_usage_layout);
+        mDataUsageImage = findViewById(R.id.daily_data_usage_icon);
+        mDataUsageView = findViewById(R.id.data_sim_usage);
         mWeatherView = findViewById(R.id.qs_weather_container);
         mWeatherView.disableUpdates();
         mWeatherView.enableUpdates();
@@ -521,6 +533,25 @@ public class QuickStatusBarHeader extends RelativeLayout implements
         mBatteryMeterView.setVisibility(isHideBattIcon ? View.GONE : View.VISIBLE);
     }
 
+    private void updateDataUsageView() {
+        if (mDataUsageView.isDataUsageEnabled() != 0) {
+            if (aosipUtils.isConnected(mContext)) {
+                DataUsageView.updateUsage();
+                mDataUsageLayout.setVisibility(View.VISIBLE);
+                mDataUsageImage.setVisibility(View.VISIBLE);
+                mDataUsageView.setVisibility(View.VISIBLE);
+            } else {
+                mDataUsageView.setVisibility(View.GONE);
+                mDataUsageImage.setVisibility(View.GONE);
+                mDataUsageLayout.setVisibility(View.GONE);
+            }
+        } else {
+            mDataUsageView.setVisibility(View.GONE);
+            mDataUsageImage.setVisibility(View.GONE);
+            mDataUsageLayout.setVisibility(View.GONE);
+        }
+    }
+
     private void updateSBBatteryStyle() {
         mBatteryMeterView.setBatteryStyle(Settings.System.getInt(mContext.getContentResolver(),
         Settings.System.STATUS_BAR_BATTERY_STYLE, 0));
@@ -610,6 +641,7 @@ public class QuickStatusBarHeader extends RelativeLayout implements
         mExpanded = expanded;
         mHeaderQsPanel.setExpanded(expanded);
         updateEverything();
+        updateDataUsageView();
         setExpandedText();
     }
 
@@ -842,6 +874,7 @@ public class QuickStatusBarHeader extends RelativeLayout implements
         updateQSClock();
         updateResources();
         updateStatusbarProperties();
+        updateDataUsageView();
         updateSynthAccent();
         updateSynthStatusIcons();
         updateSynthStatusInfo();
