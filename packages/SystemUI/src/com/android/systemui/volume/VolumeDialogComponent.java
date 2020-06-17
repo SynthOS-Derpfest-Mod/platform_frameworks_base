@@ -98,7 +98,7 @@ public class VolumeDialogComponent implements VolumeComponent, TunerService.Tuna
         impl.setStreamImportant(AudioManager.STREAM_SYSTEM, false);
         impl.setAutomute(true);
         impl.setSilentMode(false);
-        impl.initText(mMediaManager);
+            impl.initDependencies(mMediaManager);
         return impl;
     }
 
