@@ -82,6 +82,8 @@ import com.android.systemui.statusbar.policy.DateView;
 import com.android.systemui.statusbar.policy.NextAlarmController;
 import com.android.systemui.statusbar.policy.ZenModeController;
 
+import com.android.systemui.synth.gamma.Gamma;
+
 import java.util.Locale;
 import java.util.Objects;
 
@@ -159,6 +161,9 @@ public class QuickStatusBarHeader extends RelativeLayout implements
     private BatteryMeterView mBatteryMeterView;
 
     private TextView mExpandedText;
+
+    private Gamma mGamma;
+
     private class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
             super(handler);
@@ -203,10 +208,16 @@ public class QuickStatusBarHeader extends RelativeLayout implements
                     .getUriFor(Settings.System.SYNTHUI_QSEXPANDED_TEXT_STRING), false,
                     this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System
-                    .getUriFor(Settings.System.SYNTHUI_ACCENT_CLOCK_QSEXPANDED), false,
+                    .getUriFor(Settings.System.SYNTHUI_COLOR_TYPE_CLOCK_QSEXPANDED), false,
                     this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System
-                    .getUriFor(Settings.System.SYNTHUI_ACCENT_DATE_QSEXPANDED), false,
+                    .getUriFor(Settings.System.SYNTHUI_COLOR_TYPE_DATE_QSEXPANDED), false,
+                    this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.SYNTHUI_FONT_CLOCK_QSEXPANDED), false,
+                    this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.SYNTHUI_FONT_DATE_QSEXPANDED), false,
                     this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System
                     .getUriFor(Settings.System.SYNTHUI_STATUSICONS_QSEXPANDED), false,
@@ -270,6 +281,7 @@ public class QuickStatusBarHeader extends RelativeLayout implements
         mActivityStarter = activityStarter;
         mDualToneHandler = new DualToneHandler(
                 new ContextThemeWrapper(context, R.style.QSHeaderTheme));
+        mGamma = Dependency.get(Gamma.class);
         mSettingsObserver.observe();
     }
 
@@ -378,7 +390,7 @@ public class QuickStatusBarHeader extends RelativeLayout implements
                             if(mExpandedText != null){
       if (isShow) {
           if (text == null || text == "") {
-              mExpandedText.setText("#Derpfest TikkiBuild");
+              mExpandedText.setText("#SynthOS");
               mExpandedText.setVisibility(View.VISIBLE);
           } else {
               mExpandedText.setText(text);
@@ -578,33 +590,17 @@ public class QuickStatusBarHeader extends RelativeLayout implements
                 .build();
     }
 
-    private void updateSynthAccent() {
+    private void updateSynthText() {
 
+        String SYNTHUI_FONT_CLOCK_QSEXPANDED = "synthui_font_clock_qsexpanded";
+        String SYNTHUI_FONT_DATE_QSEXPANDED = "synthui_font_date_qsexpanded";
+        String SYNTHUI_COLOR_TYPE_CLOCK_QSEXPANDED = "synthui_color_type_clock_qsexpanded";
+        String SYNTHUI_COLOR_TYPE_DATE_QSEXPANDED = "synthui_color_type_date_qsexpanded";
 
-        @ColorInt int textColor = Utils.getColorAttrDefaultColor(getContext(),
-                R.attr.wallpaperTextColor);
-        float intensity = textColor == Color.WHITE ? 0 : 1;
-        Rect tintArea = new Rect(0, 0, 0, 0);
-
-        boolean clockAccent = Settings.System.getIntForUser(mContext.getContentResolver(),
-                        Settings.System.SYNTHUI_ACCENT_CLOCK_QSEXPANDED, 1,
-                        UserHandle.USER_CURRENT) == 1;
-
-        boolean dateAccent = Settings.System.getIntForUser(mContext.getContentResolver(),
-                        Settings.System.SYNTHUI_ACCENT_DATE_QSEXPANDED, 1,
-                        UserHandle.USER_CURRENT) == 1;
-
-        if (clockAccent) {
-            mSynthClockExpandedView.setTextColor(mContext.getResources().getColor(R.color.accent_device_default_light));
-        } else {
-            mSynthClockExpandedView.setTextColor(textColor);
-        }
-
-        if (dateAccent) {
-            mSynthDateExpandedView.setTextColor(mContext.getResources().getColor(R.color.accent_device_default_light));
-        } else {
-            mSynthDateExpandedView.setTextColor(textColor);
-        }
+        mGamma.setTextFontFromVarible(mSynthClockExpandedView, SYNTHUI_FONT_CLOCK_QSEXPANDED);
+        mGamma.setTextFontFromVarible(mSynthDateExpandedView, SYNTHUI_FONT_DATE_QSEXPANDED);
+        mGamma.setTextColorTypeFromVariable(mSynthClockExpandedView, SYNTHUI_COLOR_TYPE_CLOCK_QSEXPANDED, null);
+        mGamma.setTextColorTypeFromVariable(mSynthDateExpandedView, SYNTHUI_COLOR_TYPE_DATE_QSEXPANDED, null);
 
     }
 
@@ -875,7 +871,7 @@ public class QuickStatusBarHeader extends RelativeLayout implements
         updateResources();
         updateStatusbarProperties();
         updateDataUsageView();
-        updateSynthAccent();
+        updateSynthText();
         updateSynthStatusIcons();
         updateSynthStatusInfo();
         setExpandedText();
