@@ -507,6 +507,10 @@ public class StatusBar extends SystemUI implements DemoMode,
     private int mTickerAnimationMode;
     private int mTickerTickDuration;
 
+    //Lockscreen Notifications
+    private int mMaxKeyguardNotifConfig;
+    private boolean mCustomMaxKeyguard;
+
     // for disabling the status bar
     private int mDisabled1 = 0;
     private int mDisabled2 = 0;
@@ -848,6 +852,9 @@ public class StatusBar extends SystemUI implements DemoMode,
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.BRIGHTNESS_SLIDER_QS_UNEXPANDED),
                     false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.LOCKSCREEN_MAX_NOTIF_CONFIG),
+                    false, this, UserHandle.USER_ALL);
         }
 
         @Override
@@ -931,6 +938,8 @@ public class StatusBar extends SystemUI implements DemoMode,
                 mQSPanel.getHost().reloadAllTiles();
             } else if (uri.equals(Settings.System.getUriFor(Settings.System.BRIGHTNESS_SLIDER_QS_UNEXPANDED))) {
                     updateBrightnessSliderOverlay();
+            } else if (uri.equals(Settings.System.getUriFor(Settings.System.LOCKSCREEN_MAX_NOTIF_CONFIG))) {
+                setMaxKeyguardNotifConfig();
             }
         }
 
@@ -954,6 +963,7 @@ public class StatusBar extends SystemUI implements DemoMode,
             handleCutout(null);
             setMediaHeadsup();
             updateQSHeaderStyle();
+            setMaxKeyguardNotifConfig();
         }
     }
 
@@ -5054,6 +5064,11 @@ public class StatusBar extends SystemUI implements DemoMode,
         setCutoutOverlay(hideCutoutMode);
         setNotificationPanelPadding(immerseMode);
         setStatusBarStockOverlay(hideCutoutMode && statusBarStock);
+    }
+
+    private void setMaxKeyguardNotifConfig() {
+        mMaxKeyguardNotifConfig = Settings.System.getIntForUser(mContext.getContentResolver(),
+                 Settings.System.LOCKSCREEN_MAX_NOTIF_CONFIG, 3, UserHandle.USER_CURRENT);
     }
 
     public int getWakefulnessState() {
