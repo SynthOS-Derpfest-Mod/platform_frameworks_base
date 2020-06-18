@@ -6921,27 +6921,22 @@ public final class Settings {
         * by.tikkiX2
         * @hide
         */
-        public static final String SYNTHUI_ACCENT_CLOCK_QSEXPANDED = "synthui_accent_clock_qsexpanded";
+        public static final String SYNTHUI_COLOR_TYPE_CLOCK_QSEXPANDED = "synthui_color_type_clock_qsexpanded";
 
-        /**
-        * SynthUI
-        * by.tikkiX2
-        * @hide
-        */
-        public static final String SYNTHUI_ACCENT_DATE_QSEXPANDED = "synthui_accent_date_qsexpanded";
+        private static final Validator SYNTHUI_COLOR_TYPE_CLOCK_QSEXPANDED_VALIDATOR =
+                ANY_INTEGER_VALIDATOR;
 
-        /**
-        * SynthUI
-        * by.tikkiX2
-        * @hide
-        */
+        public static final String SYNTHUI_COLOR_TYPE_DATE_QSEXPANDED = "synthui_color_type_date_qsexpanded";
+
+        private static final Validator SYNTHUI_COLOR_TYPE_DATE_QSEXPANDED_VALIDATOR =
+                ANY_INTEGER_VALIDATOR;
+
+        public static final String SYNTHUI_FONT_CLOCK_QSEXPANDED = "synthui_font_clock_qsexpanded";
+
+        public static final String SYNTHUI_FONT_DATE_QSEXPANDED = "synthui_font_date_qsexpanded";
+
         public static final String SYNTHUI_STATUSICONS_QSEXPANDED = "synthui_statusicons_qsexpanded";
 
-        /**
-        * SynthUI
-        * by.tikkiX2
-        * @hide
-        */
         public static final String SYNTHUI_STATUSINFO_QSEXPANDED = "synthui_statusinfo_qsexpanded";
 
 
@@ -6959,6 +6954,7 @@ public final class Settings {
         */
 
         public static final String SYNTHOS_VOLUME_PANEL_PADDING_TOP = "synthos_volume_panel_padding_top";
+
         public static final String SYNTHOS_VOLUME_PANEL_PADDING_BOTTOM = "synthos_volume_panel_padding_bottom";
 
         /**
@@ -7899,6 +7895,8 @@ public final class Settings {
             VALIDATORS.put(SYNTHOS_ALIGN_LEFT_MARGIN, SYNTHOS_ALIGN_LEFT_MARGIN_VALIDATOR);
             VALIDATORS.put(SYNTHOS_AMBIENT_TEXT_COLOR, SYNTHOS_AMBIENT_TEXT_COLOR_VALIDATOR);
             VALIDATORS.put(SYNTHOS_AMBIENT_TEXT_TYPE_COLOR, SYNTHOS_AMBIENT_TEXT_TYPE_COLOR_VALIDATOR);
+            VALIDATORS.put(SYNTHUI_COLOR_TYPE_CLOCK_QSEXPANDED, SYNTHUI_COLOR_TYPE_CLOCK_QSEXPANDED_VALIDATOR);
+            VALIDATORS.put(SYNTHUI_COLOR_TYPE_DATE_QSEXPANDED, SYNTHUI_COLOR_TYPE_DATE_QSEXPANDED_VALIDATOR);
         }
 
         /**
