@@ -122,8 +122,8 @@ import com.android.systemui.util.InjectionInflationController;
 
 import com.android.systemui.omni.NotificationLightsView;
 
-import com.android.systemui.synth.AmbientText;
-import com.android.systemui.synth.AmbientCustomImage;
+import com.android.systemui.synth.gamma.AmbientText;
+import com.android.systemui.synth.gamma.AmbientCustomImage;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
