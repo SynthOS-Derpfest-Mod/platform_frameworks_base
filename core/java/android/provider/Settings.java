@@ -6998,6 +6998,16 @@ public final class Settings {
         private static final Validator SYNTHOS_AMBIENT_TEXT_TYPE_COLOR_VALIDATOR =
                 ANY_INTEGER_VALIDATOR;
 
+         /**
+          * Volume dialog timeout
+          * @hide
+          */
+         public static final String VOLUME_DIALOG_TIMEOUT = "volume_dialog_timeout";
+
+         /** @hide */
+         private static final Validator VOLUME_DIALOG_TIMEOUT_VALIDATOR =
+                new SettingsValidators.InclusiveIntegerRangeValidator(500, 10000);
+
         /**
         * Ambient Image
         * by.tikkiX2
@@ -7398,6 +7408,7 @@ public final class Settings {
             SYNTHOS_ALIGN_LEFT_MARGIN,
             SYNTHOS_AMBIENT_TEXT_COLOR,
             SYNTHOS_AMBIENT_TEXT_TYPE_COLOR,
+            VOLUME_DIALOG_TIMEOUT,
         };
 
         /**
@@ -7646,6 +7657,7 @@ public final class Settings {
             PRIVATE_SETTINGS.add(SYNTHOS_ALIGN_LEFT_MARGIN);
             PRIVATE_SETTINGS.add(SYNTHOS_AMBIENT_TEXT_COLOR);
             PRIVATE_SETTINGS.add(SYNTHOS_AMBIENT_TEXT_TYPE_COLOR);
+            PRIVATE_SETTINGS.add(VOLUME_DIALOG_TIMEOUT);
         }
 
         /**
@@ -7987,6 +7999,7 @@ public final class Settings {
             VALIDATORS.put(SYNTHOS_AMBIENT_TEXT_TYPE_COLOR, SYNTHOS_AMBIENT_TEXT_TYPE_COLOR_VALIDATOR);
             VALIDATORS.put(SYNTHUI_COLOR_TYPE_CLOCK_QSEXPANDED, SYNTHUI_COLOR_TYPE_CLOCK_QSEXPANDED_VALIDATOR);
             VALIDATORS.put(SYNTHUI_COLOR_TYPE_DATE_QSEXPANDED, SYNTHUI_COLOR_TYPE_DATE_QSEXPANDED_VALIDATOR);
+            VALIDATORS.put(VOLUME_DIALOG_TIMEOUT,VOLUME_DIALOG_TIMEOUT_VALIDATOR);
         }
 
         /**
