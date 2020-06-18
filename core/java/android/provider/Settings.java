@@ -6999,7 +6999,7 @@ public final class Settings {
                 ANY_INTEGER_VALIDATOR;
 
         /**
-        * Visualizer in QSPanel
+        * Ambient Image
         * by.tikkiX2
         * @hide
         */
@@ -7008,11 +7008,29 @@ public final class Settings {
         public static final String SYNTHOS_AMBIENT_CUSTOM_IMAGE = "synthos_ambient_custom_image";
 
         /**
+        * Ambient Video
+        * by.tikkiX2
+        * @hide
+        */
+        public static final String SYNTHOS_AMBIENT_VIDEO = "synthos_ambient_video";
+
+        public static final String SYNTHOS_AMBIENT_CUSTOM_VIDEO = "synthos_ambient_custom_video";
+
+        public static final String SYNTHOS_AMBIENT_VIDEO_LOOPING = "synthos_ambient_video_looping";
+
+        /**
         * Music Text in VolumePanel
         * by.tikkiX2
         * @hide
         */
         public static final String SYNTHOS_MUSIC_VOLUME_PANEL_TEXT = "synthos_music_volume_panel_text";
+
+        /**
+        * Custom Font from File
+        * by.tikkiX2
+        * @hide
+        */
+        public static final String SYNTHOS_CUSTOM_FONT = "synthos_custom_font";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
