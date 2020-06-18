@@ -124,6 +124,7 @@ import com.android.systemui.omni.NotificationLightsView;
 
 import com.android.systemui.synth.gamma.AmbientText;
 import com.android.systemui.synth.gamma.AmbientCustomImage;
+import com.android.systemui.synth.gamma.AmbientCustomVideo;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -489,6 +490,7 @@ public class NotificationPanelView extends PanelView implements
     // synth additions
     private AmbientText mAmbientText;
     private AmbientCustomImage mAmbientCustomImage;
+    private AmbientCustomVideo mAmbientCustomVideo;
 
 
     @Inject
@@ -598,6 +600,7 @@ public class NotificationPanelView extends PanelView implements
         mPulseLightsView = (NotificationLightsView) findViewById(R.id.lights_container);
         mAmbientText = (AmbientText) findViewById(R.id.text_container);
         mAmbientCustomImage = (AmbientCustomImage) findViewById(R.id.image_container);
+        mAmbientCustomVideo = (AmbientCustomVideo) findViewById(R.id.video_container);
 
         initBottomArea();
 
@@ -1884,6 +1887,10 @@ public class NotificationPanelView extends PanelView implements
                     .alpha(0f)
                     .setStartDelay(0)
                     .setDuration(160);
+            mAmbientCustomVideo.animate()
+                    .alpha(0f)
+                    .setStartDelay(0)
+                    .setDuration(160);
             mAmbientText.animate()
                     .alpha(0f)
                     .setStartDelay(0)
@@ -1894,6 +1901,10 @@ public class NotificationPanelView extends PanelView implements
                         .setDuration(mKeyguardMonitor.getShortenedFadingAwayDuration())
                         .start();
                 mAmbientCustomImage.animate()
+                        .setStartDelay(mKeyguardMonitor.getKeyguardFadingAwayDelay())
+                        .setDuration(mKeyguardMonitor.getShortenedFadingAwayDuration())
+                        .start();
+                mAmbientCustomVideo.animate()
                         .setStartDelay(mKeyguardMonitor.getKeyguardFadingAwayDelay())
                         .setDuration(mKeyguardMonitor.getShortenedFadingAwayDuration())
                         .start();
@@ -1918,6 +1929,11 @@ public class NotificationPanelView extends PanelView implements
                     .alpha(1f)
                     .setStartDelay(0)
                     .setDuration(320);
+            mAmbientCustomVideo.setAlpha(0f);
+            mAmbientCustomVideo.animate()
+                    .alpha(1f)
+                    .setStartDelay(0)
+                    .setDuration(320);
             mAmbientText.setAlpha(0f);
             mAmbientText.animate()
                     .alpha(1f)
@@ -1939,6 +1955,11 @@ public class NotificationPanelView extends PanelView implements
                         .setDuration(125)
                         .setStartDelay(0)
                         .start();
+                mAmbientCustomVideo.animate()
+                        .alpha(0)
+                        .setDuration(125)
+                        .setStartDelay(0)
+                        .start();
                 mAmbientText.animate()
                         .alpha(0)
                         .setDuration(125)
@@ -1948,12 +1969,14 @@ public class NotificationPanelView extends PanelView implements
                 mKeyguardStatusView.setVisibility(View.VISIBLE);
                 mKeyguardStatusView.setAlpha(1f);
                 mAmbientCustomImage.setAlpha(1f);
+                mAmbientCustomVideo.setAlpha(1f);
                 mAmbientText.setAlpha(1f);
             }
         } else {
             mKeyguardStatusView.setVisibility(View.GONE);
             mKeyguardStatusView.setAlpha(1f);
             mAmbientCustomImage.setAlpha(1f);
+            mAmbientCustomVideo.setAlpha(1f);
             mAmbientText.setAlpha(1f);
         }
     }
@@ -3517,6 +3540,10 @@ public class NotificationPanelView extends PanelView implements
             updateAmbientCustomImageState(dozing);
         }
 
+        if (mAmbientCustomVideo != null) {
+            updateAmbientCustomVideoState(dozing);
+        }
+
         final float dozeAmount = dozing ? 1 : 0;
         mStatusBarStateController.setDozeAmount(dozeAmount, animate);
     }
@@ -3586,6 +3613,30 @@ public class NotificationPanelView extends PanelView implements
         }
     }
 
+    private void updateAmbientCustomVideoState(boolean dozing) {
+        boolean mAmbientCustomVideoEnable = Settings.System.getIntForUser(
+                mContext.getContentResolver(), Settings.System.SYNTHOS_AMBIENT_VIDEO,
+                0, UserHandle.USER_CURRENT) != 0;
+
+        if (mAmbientCustomVideoEnable) {
+            if (dozing) {
+                // TODO on screen off should we restart pulse?
+                // if that should work we need to decide at this point
+                // if the current notifications "would" turn the screen on
+                // just checking hasActiveClearableNotifications is obviusly not
+                // enough here - so for now dont even try to do it
+                mAmbientCustomVideo.update();
+                mAmbientCustomVideo.setState(true);
+                mAmbientCustomVideo.setVisibility(View.VISIBLE);
+            } else {
+                // screen on!
+                mAmbientCustomVideo.setVisibility(View.GONE);
+                mAmbientCustomVideo.setState(false);
+                mAmbientCustomVideo.update();
+            }
+        }
+    }
+
     @Override
     public void onDozeAmountChanged(float linearAmount, float amount) {
         mInterpolatedDarkAmount = amount;
@@ -3626,6 +3677,9 @@ public class NotificationPanelView extends PanelView implements
 
         boolean ambientImage = Settings.System.getIntForUser(resolver,
                 Settings.System.SYNTHOS_AMBIENT_IMAGE, 0, UserHandle.USER_CURRENT) != 0;
+
+        boolean ambientVideo = Settings.System.getIntForUser(resolver,
+                Settings.System.SYNTHOS_AMBIENT_VIDEO, 0, UserHandle.USER_CURRENT) != 0;
 
         if (animatePulse) {
             mAnimateNextPositionUpdate = true;
@@ -3737,6 +3791,27 @@ public class NotificationPanelView extends PanelView implements
         } else {
             mAmbientCustomImage.setVisibility(View.GONE);
             mAmbientCustomImage.update();
+        }
+          if (mAmbientCustomVideo != null && ambientVideo) {
+            if (mPulsing) {
+                mAmbientCustomVideo.setVisibility(View.VISIBLE);
+                mAmbientCustomVideo.setState(true);
+                mAmbientCustomVideo.update();
+            } else {
+                if (mDozing) {
+                    mAmbientCustomVideo.update();
+                    mAmbientCustomVideo.setVisibility(View.VISIBLE);
+                    mAmbientCustomVideo.setState(true);
+                } else {
+                    mAmbientCustomVideo.update();
+                    mAmbientCustomVideo.setVisibility(View.GONE);
+                    mAmbientCustomVideo.setState(false);
+                }
+            }
+        } else {
+            mAmbientCustomVideo.setVisibility(View.GONE);
+            mAmbientCustomVideo.setState(false);
+            mAmbientCustomVideo.update();
         }
 
         mNotificationStackScroller.setPulsing(pulsing, animatePulse);
