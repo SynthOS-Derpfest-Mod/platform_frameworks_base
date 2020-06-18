@@ -6829,6 +6829,11 @@ public final class Settings {
         public static final String POWER_MENU_BG_STYLE = "power_menu_bg_style";
 
         /**
+         * @hide
+         */
+        public static final String QS_HEADER_STYLE = "qs_header_style";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
@@ -7341,6 +7346,7 @@ public final class Settings {
             PRIVATE_SETTINGS.add(SYNTHOS_AMBIENT_TEXT_COLOR);
             PRIVATE_SETTINGS.add(SYNTHOS_AMBIENT_TEXT_TYPE_COLOR);
             PRIVATE_SETTINGS.add(VOLUME_DIALOG_TIMEOUT);
+            PRIVATE_SETTINGS.add(QS_HEADER_STYLE);
         }
 
         /**
