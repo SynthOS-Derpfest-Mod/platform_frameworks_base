@@ -225,6 +225,9 @@ public class QuickStatusBarHeader extends RelativeLayout implements
             resolver.registerContentObserver(Settings.System
                     .getUriFor(Settings.System.SYNTHUI_STATUSINFO_QSEXPANDED), false,
                     this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.SYNTHUI_WEATHER), true,
+                    this, UserHandle.USER_ALL);
         }
 
         @Override
@@ -344,8 +347,6 @@ public class QuickStatusBarHeader extends RelativeLayout implements
         mDataUsageImage = findViewById(R.id.daily_data_usage_icon);
         mDataUsageView = findViewById(R.id.data_sim_usage);
         mWeatherView = findViewById(R.id.qs_weather_container);
-        mWeatherView.disableUpdates();
-        mWeatherView.enableUpdates();
         mSynthClockExpandedView = findViewById(R.id.SynthClockExpanded);
         mSynthDateExpandedView = findViewById(R.id.SynthDateExpanded);
         mStatusIconsContainer = findViewById(R.id.synthStatusIconsContainer);
@@ -632,6 +633,23 @@ public class QuickStatusBarHeader extends RelativeLayout implements
 
     }
 
+    private void updateWeather() {
+
+        boolean isShow = Settings.System.getIntForUser(mContext.getContentResolver(),
+                        Settings.System.SYNTHUI_WEATHER, 1,
+                        UserHandle.USER_CURRENT) == 1;
+
+        if (isShow) {
+            mWeatherView.setVisibility(View.VISIBLE);
+            mWeatherView.disableUpdates();
+            mWeatherView.enableUpdates();
+        } else {
+            mWeatherView.setVisibility(View.GONE);
+            mWeatherView.disableUpdates();
+        }
+
+    }
+
     public void setExpanded(boolean expanded) {
         if (mExpanded == expanded) return;
         mExpanded = expanded;
@@ -874,6 +892,7 @@ public class QuickStatusBarHeader extends RelativeLayout implements
         updateSynthText();
         updateSynthStatusIcons();
         updateSynthStatusInfo();
+        updateWeather();
         setExpandedText();
     }
 

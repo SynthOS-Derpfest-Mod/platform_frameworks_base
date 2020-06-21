@@ -6639,6 +6639,8 @@ public final class Settings {
 
         public static final String SYNTHUI_STATUSINFO_QSEXPANDED = "synthui_statusinfo_qsexpanded";
 
+        public static final String SYNTHUI_WEATHER = "synthui_weather";
+
 
         /**
         * Visualizer in QSPanel
@@ -6705,10 +6707,6 @@ public final class Settings {
           * @hide
           */
          public static final String VOLUME_DIALOG_TIMEOUT = "volume_dialog_timeout";
-
-         /** @hide */
-         private static final Validator VOLUME_DIALOG_TIMEOUT_VALIDATOR =
-                new SettingsValidators.InclusiveIntegerRangeValidator(500, 10000);
 
         /**
         * Ambient Image
@@ -7104,7 +7102,6 @@ public final class Settings {
             SYNTHOS_ALIGN_LEFT_MARGIN,
             SYNTHOS_AMBIENT_TEXT_COLOR,
             SYNTHOS_AMBIENT_TEXT_TYPE_COLOR,
-            VOLUME_DIALOG_TIMEOUT,
         };
 
         /**
@@ -7352,7 +7349,6 @@ public final class Settings {
             PRIVATE_SETTINGS.add(SYNTHOS_ALIGN_LEFT_MARGIN);
             PRIVATE_SETTINGS.add(SYNTHOS_AMBIENT_TEXT_COLOR);
             PRIVATE_SETTINGS.add(SYNTHOS_AMBIENT_TEXT_TYPE_COLOR);
-            PRIVATE_SETTINGS.add(VOLUME_DIALOG_TIMEOUT);
             PRIVATE_SETTINGS.add(QS_HEADER_STYLE);
         }
 
@@ -7665,7 +7661,6 @@ public final class Settings {
             VALIDATORS.put(SYNTHOS_AMBIENT_TEXT_TYPE_COLOR, SYNTHOS_AMBIENT_TEXT_TYPE_COLOR_VALIDATOR);
             VALIDATORS.put(SYNTHUI_COLOR_TYPE_CLOCK_QSEXPANDED, SYNTHUI_COLOR_TYPE_CLOCK_QSEXPANDED_VALIDATOR);
             VALIDATORS.put(SYNTHUI_COLOR_TYPE_DATE_QSEXPANDED, SYNTHUI_COLOR_TYPE_DATE_QSEXPANDED_VALIDATOR);
-            VALIDATORS.put(VOLUME_DIALOG_TIMEOUT,VOLUME_DIALOG_TIMEOUT_VALIDATOR);
         }
 
         /**
