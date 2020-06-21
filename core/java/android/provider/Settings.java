@@ -6939,6 +6939,8 @@ public final class Settings {
 
         public static final String SYNTHUI_STATUSINFO_QSEXPANDED = "synthui_statusinfo_qsexpanded";
 
+        public static final String SYNTHUI_WEATHER = "synthui_weather";
+
 
         /**
         * Visualizer in QSPanel
