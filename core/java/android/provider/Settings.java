@@ -6745,6 +6745,13 @@ public final class Settings {
         public static final String SYNTHOS_CUSTOM_FONT = "synthos_custom_font";
 
         /**
+        * Hide QSTiles
+        * by.tikkiX2
+        * @hide
+        */
+        public static final String HIDE_QS_TILES = "hide_qs_tiles";
+
+        /**
          * Change the color of the lockscreen clock
          *
          * @hide

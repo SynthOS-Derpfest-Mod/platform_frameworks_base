@@ -14,6 +14,10 @@
 
 package com.android.systemui.qs;
 
+import android.content.Context;
+import android.content.ContentResolver;
+import android.os.UserHandle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnAttachStateChangeListener;
@@ -75,10 +79,14 @@ public class QSAnimator implements Callback, PageListener, Listener, OnLayoutCha
     private QSTileHost mHost;
     private boolean mShowCollapsedOnKeyguard;
 
-    public QSAnimator(QS qs, QuickQSPanel quickPanel, QSPanel panel) {
+    private boolean mHideQSTiles;
+    private Context mContext;
+
+    public QSAnimator(QS qs, QuickQSPanel quickPanel, QSPanel panel, Context context) {
         mQs = qs;
         mQuickQsPanel = quickPanel;
         mQsPanel = panel;
+        mContext = context;
         mQsPanel.addOnAttachStateChangeListener(this);
         qs.getView().addOnLayoutChangeListener(this);
         if (mQsPanel.isAttachedToWindow()) {
@@ -313,7 +321,7 @@ public class QSAnimator implements Callback, PageListener, Listener, OnLayoutCha
             mTranslationYAnimator = translationYBuilder.build();
         }
         TouchAnimator.Builder animationBuilder = new TouchAnimator.Builder()
-                .addFloat(mQuickQsPanel, "alpha", 1, 0)
+                .addFloat(mQuickQsPanel, "alpha", mHideQSTiles ? 0 : 1, 0)
                 .addFloat(mQsPanel.getDivider(), "alpha", 0, 1)
                 .setListener(mNonFirstPageListener)
                 .setEndDelay(.5f);
@@ -362,7 +370,7 @@ public class QSAnimator implements Callback, PageListener, Listener, OnLayoutCha
         }
         mLastPosition = position;
         if (mOnFirstPage && mAllowFancy) {
-            mQuickQsPanel.setAlpha(1);
+            mQuickQsPanel.setAlpha(mHideQSTiles ? 0 : 1);
             mFirstPageAnimator.setPosition(position);
             mFirstPageDelayedAnimator.setPosition(position);
             mTranslationXAnimator.setPosition(position);
@@ -378,7 +386,7 @@ public class QSAnimator implements Callback, PageListener, Listener, OnLayoutCha
 
     @Override
     public void onAnimationAtStart() {
-        mQuickQsPanel.setVisibility(View.VISIBLE);
+        mQuickQsPanel.setVisibility(mHideQSTiles ? View.INVISIBLE : View.VISIBLE);
     }
 
     @Override
@@ -438,7 +446,7 @@ public class QSAnimator implements Callback, PageListener, Listener, OnLayoutCha
 
                 @Override
                 public void onAnimationStarted() {
-                    mQuickQsPanel.setVisibility(View.VISIBLE);
+                    mQuickQsPanel.setVisibility(mHideQSTiles ? View.INVISIBLE : View.VISIBLE);
                 }
             };
 
@@ -452,6 +460,7 @@ public class QSAnimator implements Callback, PageListener, Listener, OnLayoutCha
 
     public void updateSettings() {
         mNumQuickTiles = mQuickQsPanel.getNumQuickTiles();
+        mHideQSTiles = Settings.System.getIntForUser(mContext.getContentResolver(), Settings.System.HIDE_QS_TILES, 0, UserHandle.USER_CURRENT) != 0;
         clearAnimationState();
     }
 }
