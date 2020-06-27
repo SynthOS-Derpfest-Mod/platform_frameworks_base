@@ -252,6 +252,9 @@ public class KeyguardStatusView extends GridLayout implements
         mTextClock = findViewById(R.id.custom_text_clock_view);
         mOwnerInfo = findViewById(R.id.owner_info);
         mKeyguardSlice = findViewById(R.id.keyguard_status_area);
+        mCoolDividerOne = findViewById(R.id.cool_divider);
+        mCoolDividerTwo = findViewById(R.id.cool_divider_two);
+        mCoolDividerThree = findViewById(R.id.cool_divider_three);
 
         mWeatherView = (CurrentWeatherView) findViewById(R.id.weather_container);
         updateSettings();

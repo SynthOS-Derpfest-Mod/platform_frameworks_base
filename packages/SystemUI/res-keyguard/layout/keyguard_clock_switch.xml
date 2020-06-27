@@ -97,5 +97,6 @@
     <include layout="@layout/keyguard_status_area"
         android:id="@+id/keyguard_status_area"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_below="@id/cool_divider" />
 </com.android.keyguard.KeyguardClockSwitch>
