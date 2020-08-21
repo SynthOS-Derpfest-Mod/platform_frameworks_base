@@ -6950,6 +6950,8 @@ public final class Settings {
 
         public static final String QS_PANEL_CUSTOM_IMAGE_BLUR = "qs_panel_custom_image_blur";
 
+        public static final String QS_PANEL_WALLPAPER_BACKGROUND = "qs_panel_wallpaper_background";
+
         /**
         * Visualizer in QSPanel
         * by.tikkiX2

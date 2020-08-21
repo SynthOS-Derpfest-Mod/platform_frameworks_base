@@ -156,6 +156,7 @@ import com.android.internal.util.hwkeys.PackageMonitor.PackageChangedListener;
 import com.android.internal.util.hwkeys.PackageMonitor.PackageState;
 import com.android.internal.util.aosip.aosipUtils;
 import com.android.internal.util.aosip.ThemesUtils;
+import com.android.internal.util.aosip.ImageHelper;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.keyguard.KeyguardUpdateMonitor;
 import com.android.keyguard.KeyguardUpdateMonitorCallback;
@@ -909,7 +910,8 @@ public class StatusBar extends SystemUI implements DemoMode,
                 updateQSPanel();
                 mQSPanel.getHost().reloadAllTiles();
             } else if (uri.equals(Settings.System.getUriFor(Settings.System.QS_BLUR_ALPHA)) ||
-                    uri.equals(Settings.System.getUriFor(Settings.System.QS_BLUR_INTENSITY))) {
+                    uri.equals(Settings.System.getUriFor(Settings.System.QS_BLUR_INTENSITY)) ||
+                    uri.equals(Settings.System.getUriFor(Settings.System.QS_PANEL_WALLPAPER_BACKGROUND))) {
                 updateBlurVisibility();
             } else if (uri.equals(Settings.Secure.getUriFor(Settings.Secure.LOCKSCREEN_CLOCK_SELECTION)) ||
                     uri.equals(Settings.System.getUriFor(Settings.System.LOCKSCREEN_CLOCK)) ||
@@ -1613,9 +1615,13 @@ public class StatusBar extends SystemUI implements DemoMode,
         int QSUserAlpha = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.QS_BLUR_ALPHA, 100);
         float QSBlurAlpha = mNotificationPanel.getExpandedFraction() * (float)((float) QSUserAlpha / 100.0);
+        float QSBlurPosition = mNotificationPanel.getExpandedFraction() * (float) mQSBlurView.getMeasuredHeight();
         boolean enoughBlurData = (QSBlurAlpha > 0 && qsBlurIntensity() > 0);
 
-        if (enoughBlurData && !blurperformed && !mIsKeyguard && isQSBlurEnabled()) {
+        if (isQSWallpaperEnabled()) {
+            mQSBlurView.setTop((int) (mQSBlurView.getMeasuredHeight() - QSBlurPosition) - ((int) (mQSBlurView.getMeasuredHeight() - QSBlurPosition) * 2));
+        }
+        if (enoughBlurData && !blurperformed && !mIsKeyguard && (isQSBlurEnabled() || isQSWallpaperEnabled())) {
             drawBlurView();
             blurperformed = true;
             mQSBlurView.setVisibility(View.VISIBLE);
@@ -1623,14 +1629,21 @@ public class StatusBar extends SystemUI implements DemoMode,
             blurperformed = false;
             mQSBlurView.setVisibility(View.GONE);
         }
-        mQSBlurView.setAlpha(QSBlurAlpha);
+
+        mQSBlurView.setAlpha((isQSWallpaperEnabled() ? 1 : QSBlurAlpha));
     }
 
     private void drawBlurView() {
         Bitmap surfaceBitmap = ImageUtilities.screenshotSurface(mContext);
-        if (surfaceBitmap == null) {
+        WallpaperManager wallpaperManager = WallpaperManager.getInstance(mContext);
+        WallpaperInfo info = wallpaperManager.getWallpaperInfo(UserHandle.USER_CURRENT);
+        Bitmap wallpaper = info == null ? ImageHelper.drawableToBitmap(wallpaperManager.getDrawable()) : null;
+        Bitmap wallpaperBlur = info == null ? ImageHelper.getBlurredImage(mContext, wallpaper, ((float) qsBlurIntensity()) * 0.25f) : null;
+        if (info == null && isQSWallpaperEnabled()) {
+            mQSBlurView.setImageBitmap(isQSBlurEnabled() ? wallpaperBlur : wallpaper);
+        } else if (surfaceBitmap == null && !isQSWallpaperEnabled()) {
             mQSBlurView.setImageDrawable(null);
-        } else {
+        } else if (!isQSWallpaperEnabled()) {
             mQSBlurView.setImageBitmap(ImageUtilities.blurImage(mContext, surfaceBitmap, qsBlurIntensity()));
         }
     }
@@ -1638,6 +1651,11 @@ public class StatusBar extends SystemUI implements DemoMode,
     private boolean isQSBlurEnabled() {
         return Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.QS_BLUR, 0) != 0;
+    }
+
+    private boolean isQSWallpaperEnabled() {
+        return Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.QS_PANEL_WALLPAPER_BACKGROUND, 0) != 0;
     }
 
     private int qsBlurIntensity() {
