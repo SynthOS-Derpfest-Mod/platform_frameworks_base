@@ -41,8 +41,6 @@
     	  android:layout_height="wrap_content"
     	  android:minWidth="48dp"
     	  android:layout_gravity="top|start"
-    	  android:paddingStart="@dimen/status_bar_left_clock_starting_padding"
-    	  android:paddingEnd="@dimen/status_bar_left_clock_end_padding"
     	  android:format12Hour="hh:mm a"
     	  android:format24Hour="HH:mm"
     	  android:singleLine="true"

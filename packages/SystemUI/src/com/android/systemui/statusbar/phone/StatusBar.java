@@ -848,6 +848,9 @@ public class StatusBar extends SystemUI implements DemoMode,
                     Settings.System.QS_HEADER_STYLE),
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.SWITCH_STYLE),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.QS_TILE_STYLE),
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
@@ -1176,7 +1179,7 @@ public class StatusBar extends SystemUI implements DemoMode,
         mFalsingManager = Dependency.get(FalsingManager.class);
         mWallpaperSupported =
                 mContext.getSystemService(WallpaperManager.class).isWallpaperSupported();
-	mVolumePluginManager = new VolumePluginManager(mContext, mHandler);
+        mVolumePluginManager = new VolumePluginManager(mContext, mHandler);
 
         // Connect in to the status bar manager service
         mCommandQueue = getComponent(CommandQueue.class);

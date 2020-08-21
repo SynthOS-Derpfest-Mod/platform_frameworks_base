@@ -475,6 +475,7 @@ public class KeyguardStatusView extends GridLayout implements
                 break;
             case 1: // semi-transparent box
                 mKeyguardSlice.setViewBackground(getResources().getDrawable(R.drawable.date_box_str_border));
+                mKeyguardSlice.setTitleBackground(getResources().getDrawable(R.drawable.date_box_str_border));
                 mWeatherView.setBackground(getResources().getDrawable(R.drawable.date_box_str_border));
                 mDateHorPadding = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelSize(R.dimen.widget_date_box_padding_hor),getResources().getDisplayMetrics()));
                 mDateVerPadding = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelSize(R.dimen.widget_date_box_padding_ver),getResources().getDisplayMetrics()));
@@ -484,6 +485,7 @@ public class KeyguardStatusView extends GridLayout implements
                 break;
             case 2: // semi-transparent box (round)
                 mKeyguardSlice.setViewBackground(getResources().getDrawable(R.drawable.date_str_border));
+                mKeyguardSlice.setTitleBackground(getResources().getDrawable(R.drawable.date_str_border));
                 mWeatherView.setBackground(getResources().getDrawable(R.drawable.date_str_border));
                 mDateHorPadding = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelSize(R.dimen.widget_date_box_padding_hor),getResources().getDisplayMetrics()));
                 mDateVerPadding = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelSize(R.dimen.widget_date_box_padding_ver),getResources().getDisplayMetrics()));
@@ -493,6 +495,7 @@ public class KeyguardStatusView extends GridLayout implements
                 break;
             case 3: // Q-Now Playing background
                 mKeyguardSlice.setViewBackground(getResources().getDrawable(R.drawable.ambient_indication_pill_background));
+                mKeyguardSlice.setTitleBackground(getResources().getDrawable(R.drawable.ambient_indication_pill_background));
                 mWeatherView.setBackground(getResources().getDrawable(R.drawable.ambient_indication_pill_background));
                 mDateHorPadding = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelSize(R.dimen.q_nowplay_pill_padding_hor),getResources().getDisplayMetrics()));
                 mDateVerPadding = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelSize(R.dimen.q_nowplay_pill_padding_ver),getResources().getDisplayMetrics()));
@@ -502,6 +505,7 @@ public class KeyguardStatusView extends GridLayout implements
                 break;
             case 4: // accent box
                 mKeyguardSlice.setViewBackground(getResources().getDrawable(R.drawable.date_str_accent));
+                mKeyguardSlice.setTitleBackground(getResources().getDrawable(R.drawable.date_str_accent));
                 mWeatherView.setBackground(getResources().getDrawable(R.drawable.date_str_accent));
                 mDateHorPadding = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelSize(R.dimen.widget_date_accent_box_padding_hor),getResources().getDisplayMetrics()));
                 mDateVerPadding = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelSize(R.dimen.widget_date_accent_box_padding_ver),getResources().getDisplayMetrics()));
@@ -511,6 +515,7 @@ public class KeyguardStatusView extends GridLayout implements
                 break;
             case 5: // accent box transparent
                 mKeyguardSlice.setViewBackground(getResources().getDrawable(R.drawable.date_str_accent), 160);
+                mKeyguardSlice.setTitleBackground(getResources().getDrawable(R.drawable.date_str_accent), 160);
                 mWeatherView.setBackground(getResources().getDrawable(R.drawable.date_str_accent));
                 mWeatherView.getBackground().setAlpha(160);
                 mDateHorPadding = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelSize(R.dimen.widget_date_accent_box_padding_hor),getResources().getDisplayMetrics()));
@@ -521,6 +526,7 @@ public class KeyguardStatusView extends GridLayout implements
                 break;
             case 6: // gradient box
                 mKeyguardSlice.setViewBackground(getResources().getDrawable(R.drawable.date_str_gradient));
+                mKeyguardSlice.setTitleBackground(getResources().getDrawable(R.drawable.date_str_gradient));
                 mWeatherView.setBackground(getResources().getDrawable(R.drawable.date_str_gradient));
                 mDateHorPadding = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelSize(R.dimen.widget_date_accent_box_padding_hor),getResources().getDisplayMetrics()));
                 mDateVerPadding = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelSize(R.dimen.widget_date_accent_box_padding_ver),getResources().getDisplayMetrics()));
@@ -530,6 +536,7 @@ public class KeyguardStatusView extends GridLayout implements
                 break;
             case 7: // Dark Accent border
                 mKeyguardSlice.setViewBackground(getResources().getDrawable(R.drawable.date_str_borderacc));
+                mKeyguardSlice.setTitleBackground(getResources().getDrawable(R.drawable.date_str_borderacc));
                 mWeatherView.setBackground(getResources().getDrawable(R.drawable.date_str_borderacc));
                 mDateHorPadding = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelSize(R.dimen.widget_date_accent_box_padding_hor),getResources().getDisplayMetrics()));
                 mDateVerPadding = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelSize(R.dimen.widget_date_accent_box_padding_ver),getResources().getDisplayMetrics()));
@@ -539,6 +546,7 @@ public class KeyguardStatusView extends GridLayout implements
                 break;
             case 8: // Dark Gradient border
                 mKeyguardSlice.setViewBackground(getResources().getDrawable(R.drawable.date_str_bordergrad));
+                mKeyguardSlice.setTitleBackground(getResources().getDrawable(R.drawable.date_str_bordergrad));
                 mWeatherView.setBackground(getResources().getDrawable(R.drawable.date_str_bordergrad));
                 mDateHorPadding = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelSize(R.dimen.widget_date_accent_box_padding_hor),getResources().getDisplayMetrics()));
                 mDateVerPadding = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelSize(R.dimen.widget_date_accent_box_padding_ver),getResources().getDisplayMetrics()));
@@ -548,6 +556,7 @@ public class KeyguardStatusView extends GridLayout implements
                 break;
             case 9: // gradient box
                 mKeyguardSlice.setViewBackground(getResources().getDrawable(R.drawable.date_box_str_gradient));
+                mKeyguardSlice.setTitleBackground(getResources().getDrawable(R.drawable.date_box_str_gradient));
                 mWeatherView.setBackground(getResources().getDrawable(R.drawable.date_box_str_gradient));
                 mDateHorPadding = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelSize(R.dimen.widget_date_accent_box_padding_hor),getResources().getDisplayMetrics()));
                 mDateVerPadding = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelSize(R.dimen.widget_date_accent_box_padding_ver),getResources().getDisplayMetrics()));
@@ -557,6 +566,7 @@ public class KeyguardStatusView extends GridLayout implements
                 break;
             case 10: // Dark Accent border
                 mKeyguardSlice.setViewBackground(getResources().getDrawable(R.drawable.date_box_str_borderacc));
+                mKeyguardSlice.setTitleBackground(getResources().getDrawable(R.drawable.date_box_str_borderacc));
                 mWeatherView.setBackground(getResources().getDrawable(R.drawable.date_box_str_borderacc));
                 mDateHorPadding = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelSize(R.dimen.widget_date_accent_box_padding_hor),getResources().getDisplayMetrics()));
                 mDateVerPadding = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelSize(R.dimen.widget_date_accent_box_padding_ver),getResources().getDisplayMetrics()));
@@ -566,6 +576,7 @@ public class KeyguardStatusView extends GridLayout implements
                 break;
             case 11: // Dark Gradient border
                 mKeyguardSlice.setViewBackground(getResources().getDrawable(R.drawable.date_box_str_bordergrad));
+                mKeyguardSlice.setTitleBackground(getResources().getDrawable(R.drawable.date_box_str_bordergrad));
                 mWeatherView.setBackground(getResources().getDrawable(R.drawable.date_box_str_bordergrad));
                 mDateHorPadding = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelSize(R.dimen.widget_date_accent_box_padding_hor),getResources().getDisplayMetrics()));
                 mDateVerPadding = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelSize(R.dimen.widget_date_accent_box_padding_ver),getResources().getDisplayMetrics()));
@@ -914,8 +925,6 @@ public class KeyguardStatusView extends GridLayout implements
                     Settings.System.LOCKSCREEN_WEATHER_STYLE, 1,
                     UserHandle.USER_CURRENT) == 0;
 
-            boolean hasText = TextUtils.isEmpty(mOwnerInfo.getText());
-
             if (mWeatherView != null) {
                 if (mShowWeather && mOmniStyle) {
                     mWeatherView.setVisibility(View.VISIBLE);
@@ -930,7 +939,7 @@ public class KeyguardStatusView extends GridLayout implements
             if (mShowDividers){
                 mCoolDividerOne.setVisibility(View.VISIBLE);
                 mCoolDividerTwo.setVisibility(View.VISIBLE);
-                if (mShowWeather && mOmniStyle || !hasText){
+                if (mShowWeather && mOmniStyle){
                     mCoolDividerThree.setVisibility(View.VISIBLE);
                 } else {
                     mCoolDividerThree.setVisibility(View.GONE);

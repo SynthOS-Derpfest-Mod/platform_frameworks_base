@@ -104,6 +104,7 @@ public class KeyguardSliceView extends LinearLayout implements View.OnClickListe
     @VisibleForTesting
     TextView mTitle;
     private RelativeLayout mRowContainer;
+    private LinearLayout mTitleContainer;
     private Row mRow;
     private int mTextColor;
     private float mDarkAmount = 0;
@@ -149,6 +150,7 @@ public class KeyguardSliceView extends LinearLayout implements View.OnClickListe
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+        mTitleContainer = findViewById(R.id.title_container);
         mTitle = findViewById(R.id.title);
         mRowContainer = findViewById(R.id.row_maincenter);
         mRow = findViewById(R.id.row);
@@ -203,6 +205,7 @@ public class KeyguardSliceView extends LinearLayout implements View.OnClickListe
         Trace.beginSection("KeyguardSliceView#showSlice");
         if (mSlice == null) {
             mTitle.setVisibility(GONE);
+            mTitleContainer.setVisibility(GONE);
             mRow.setVisibility(GONE);
             mHasHeader = false;
             if (mContentChangeListener != null) {
@@ -237,8 +240,10 @@ public class KeyguardSliceView extends LinearLayout implements View.OnClickListe
         }
         if (!mHasHeader) {
             mTitle.setVisibility(GONE);
+            mTitleContainer.setVisibility(GONE);
         } else {
             mTitle.setVisibility(VISIBLE);
+            mTitleContainer.setVisibility(VISIBLE);
 
             RowContent header = lc.getHeader();
             SliceItem mainTitle = header.getTitleItem();
@@ -259,19 +264,24 @@ public class KeyguardSliceView extends LinearLayout implements View.OnClickListe
                 case 4:
                 default:
                     mRowContainer.setGravity(Gravity.START);
+                    mTitleContainer.setGravity(Gravity.START);
                     break;
                 case 1:
                     mRowContainer.setGravity(Gravity.CENTER);
+                    mTitleContainer.setGravity(Gravity.CENTER);
                     break;
                 case 2:
                 case 3:
                     mRowContainer.setGravity(Gravity.END);
+                    mTitleContainer.setGravity(Gravity.END);
                     break;
             }
         } else if (mAlignLeft){
             mRowContainer.setGravity(Gravity.LEFT);
+            mTitleContainer.setGravity(Gravity.LEFT);
         } else {
             mRowContainer.setGravity(Gravity.CENTER);
+            mTitleContainer.setGravity(Gravity.CENTER);
         }
         mRow.setVisibility(subItemsCount > 0 ? VISIBLE : GONE);
 
@@ -377,20 +387,33 @@ public class KeyguardSliceView extends LinearLayout implements View.OnClickListe
         }
     }
 
+    public void setTitleBackground(Drawable drawRes) {
+        setTitleBackground(drawRes, 255);
+    }
+
+    public void setTitleBackground(Drawable drawRes, int bgAlpha) {
+        mTitleContainer.setBackground(drawRes);
+        mTitleContainer.getBackground().setAlpha(bgAlpha);
+    }
+
     public void setViewBackground(Drawable drawRes) {
         setViewBackground(drawRes, 255);
     }
 
     public void setViewBackground(Drawable drawRes, int bgAlpha) {
+        mTitleContainer.setBackground(drawRes);
+        mTitleContainer.getBackground().setAlpha(bgAlpha);
         mRow.setBackground(drawRes);
         mRow.getBackground().setAlpha(bgAlpha);
     }
 
     public void setViewBackgroundResource(int drawRes) {
+        mTitleContainer.setBackgroundResource(drawRes);
         mRow.setBackgroundResource(drawRes);
     }
 
     public void setViewPadding(int left, int top, int right, int bottom) {
+        mTitleContainer.setPadding(left,top,right,bottom);
         mRow.setPadding(left,top,right,bottom);
     }
 

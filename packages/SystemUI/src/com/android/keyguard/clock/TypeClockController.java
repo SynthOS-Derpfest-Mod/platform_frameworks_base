@@ -194,7 +194,6 @@ public class TypeClockController implements ClockPlugin {
     @Override
     public void setTypeface(Typeface tf) {
         mTypeClock.setTypeface(tf);
-        mLockClock.setTypeface(tf);
     }
 
     @Override
