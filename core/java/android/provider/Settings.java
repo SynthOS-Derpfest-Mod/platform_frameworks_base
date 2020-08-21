@@ -6978,6 +6978,12 @@ public final class Settings {
          */
         public static final String VOLUME_PANEL_ALIGNMENT = "volume_panel_alignment";
 
+        public static final String VOLUME_DIALOG_ROUNDED_VALUE = "volume_dialog_rounded_value";
+
+        public static final String VOLUME_DIALOG_ROUNDED_SYSTEM = "volume_dialog_rounded_system";
+
+        public static final String VOLUME_DIALOG_GRADIENT_STROKE = "volume_dialog_gradient_stroke";
+
         /**
         * Visualizer in QSPanel
         * by.tikkiX2
@@ -7046,6 +7052,8 @@ public final class Settings {
         * @hide
         */
         public static final String SYNTHOS_MUSIC_VOLUME_PANEL_TEXT = "synthos_music_volume_panel_text";
+
+        public static final String SYNTHOS_MEDIA_CARD_VOLUME_PANEL_FULL_WIDTH = "synthos_media_card_volume_panel_full_width";
 
         /**
         * Media Card in Ambient

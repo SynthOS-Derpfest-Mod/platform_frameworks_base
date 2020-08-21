@@ -22,6 +22,7 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.media.VolumePolicy;
+import android.media.session.MediaController;
 import android.os.Bundle;
 import android.view.WindowManager.LayoutParams;
 
@@ -74,6 +75,7 @@ public class VolumeDialogComponent implements VolumeComponent, TunerService.Tuna
         mSysui = sysui;
         mContext = context;
         mController = (VolumeDialogControllerImpl) Dependency.get(VolumeDialogController.class);
+        mMediaManager = Dependency.get(NotificationMediaManager.class);
         mController.setUserActivityListener(this);
         // Allow plugins to reference the VolumeDialogController.
         Dependency.get(PluginDependencyProvider.class)
@@ -87,6 +89,7 @@ public class VolumeDialogComponent implements VolumeComponent, TunerService.Tuna
                     }
                     mDialog = dialog;
                     mDialog.init(LayoutParams.TYPE_VOLUME_OVERLAY, mVolumeDialogCallback);
+                    mDialog.setMediaController(mMediaManager.getMediaController());
                 }).build();
         applyConfiguration();
         Dependency.get(TunerService.class).addTunable(this, VOLUME_DOWN_SILENT, VOLUME_UP_SILENT,
@@ -98,7 +101,6 @@ public class VolumeDialogComponent implements VolumeComponent, TunerService.Tuna
         impl.setStreamImportant(AudioManager.STREAM_SYSTEM, false);
         impl.setAutomute(true);
         impl.setSilentMode(false);
-            impl.initDependencies(mMediaManager);
         return impl;
     }
 
