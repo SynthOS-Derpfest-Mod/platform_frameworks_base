@@ -28,12 +28,17 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.om.IOverlayManager;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.LinearGradient;
 import android.graphics.PixelFormat;
 import android.graphics.Shader;
@@ -42,12 +47,16 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.AudioSystem;
+import android.media.MediaMetadata;
+import android.media.session.MediaController;
+import android.media.session.PlaybackState;
 import android.net.Uri;
 import android.os.Debug;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
+import android.os.SystemProperties;
 import android.os.VibrationEffect;
 import android.provider.Settings;
 import android.provider.Settings.Global;
@@ -78,9 +87,11 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.internal.util.aosip.aosipUtils;
+import com.android.internal.util.aosip.ImageHelper;
 import com.android.settingslib.Utils;
+import com.android.systemui.Dependency;
 import com.android.systemui.R;
+import com.android.systemui.statusbar.NotificationMediaManager;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -91,15 +102,19 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 
-public class Gamma {
+public class Gamma implements NotificationMediaManager.MediaListener {
 
       private final Context mContext;
+      private NotificationMediaManager mMediaManager;
       private SettingsObserver settingsObserver;
       private final Handler mHandler = new Handler();
+      private BitmapDrawable mMediaArtwork;
 
       @Inject
       public Gamma (Context context) {
           mContext = context;
+          mMediaManager = Dependency.get(NotificationMediaManager.class);
+          mMediaManager.addCallback(this);
           settingsObserver = new SettingsObserver(mHandler);
           settingsObserver.observe();
       }
@@ -122,8 +137,62 @@ public class Gamma {
           }
       }
 
+      @Override
+      public void onMetadataOrStateChanged(MediaMetadata metadata, @PlaybackState.State int state) {
+            Bitmap artwork = metadata == null ? null : metadata.getBitmap(
+                    MediaMetadata.METADATA_KEY_ALBUM_ART);
+            if (artwork != null) {
+                BitmapDrawable d = new BitmapDrawable(mContext.getResources(), artwork);
+                mMediaArtwork = d;
+            } else {
+                mMediaArtwork = null;
+            }
+      }
+
       public void setVisOrGone (View v, boolean vis) {
          v.setVisibility(vis ? View.VISIBLE : View.GONE);
+      }
+
+      public BitmapDrawable getMediaArtwork() {
+         return mMediaArtwork;
+      }
+
+      public void saveCustomFileFromString(Uri fileUri, String fileName) {
+          try {
+              final InputStream fileStream = mContext.getContentResolver().openInputStream(fileUri);
+              File file = new File(mContext.getFilesDir(), fileName);
+              if (file.exists()) {
+                  file.delete();
+              }
+              FileOutputStream output = new FileOutputStream(file);
+              byte[] buffer = new byte[8 * 1024];
+              int read;
+
+              while ((read = fileStream.read(buffer)) != -1) {
+                  output.write(buffer, 0, read);
+              }
+              output.flush();
+          } catch (IOException e) {
+          }
+      }
+
+      public BitmapDrawable getCustomImageFromString(String fileName) {
+          BitmapDrawable mImage = null;
+          File file = new File(mContext.getFilesDir(), fileName);
+          if (file.exists()) {
+              final Bitmap image = BitmapFactory.decodeFile(file.getAbsolutePath());
+              mImage = new BitmapDrawable(mContext.getResources(), ImageHelper.resizeMaxDeviceSize(mContext, image));
+          }
+          return mImage;
+      }
+
+      public String getCustomVideoPathFromString(String fileName) {
+          String mVideo = null;
+          File file = new File(mContext.getFilesDir(), fileName);
+          if (file.exists()) {
+              mVideo = file.getAbsolutePath();
+          }
+          return mVideo;
       }
 
       public void setTextFontFromVarible(TextView tv, String var) {

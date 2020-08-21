@@ -47,20 +47,20 @@ import java.io.InputStream;
 import java.util.Calendar;
 
 import com.android.internal.util.aosip.ImageHelper;
+import com.android.systemui.Dependency;
 import com.android.systemui.R;
 
 public class AmbientCustomImage extends FrameLayout {
 
-   public static final String TAG = "AmbientCustomImage";
-   private static final boolean DEBUG = true;
-   private static final String AMBIENT_IMAGE_FILE_NAME = "custom_file_ambient_image";
+   private final String AMBIENT_IMAGE_FILE_NAME = "custom_file_ambient_image";
 
    private Drawable mImage;
    private ImageView mCustomImage;
 
+   private Gamma mGamma;
+
    public AmbientCustomImage(Context context) {
        this(context, null);
-       mCustomImage = (ImageView) findViewById(R.id.custom_image);
    }
 
    public AmbientCustomImage(Context context, AttributeSet attrs) {
@@ -73,10 +73,13 @@ public class AmbientCustomImage extends FrameLayout {
 
    public AmbientCustomImage(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
        super(context, attrs, defStyleAttr, defStyleRes);
-       if (DEBUG) Log.d(TAG, "new");
+       mCustomImage = (ImageView) findViewById(R.id.custom_image);
+       mGamma = Dependency.get(Gamma.class);
    }
 
    public void update() {
+        mCustomImage = (ImageView) findViewById(R.id.custom_image);
+        mGamma = Dependency.get(Gamma.class);
         String imageUri = Settings.System.getStringForUser(mContext.getContentResolver(),
               Settings.System.SYNTHOS_AMBIENT_CUSTOM_IMAGE,
               UserHandle.USER_CURRENT);
@@ -88,35 +91,11 @@ public class AmbientCustomImage extends FrameLayout {
    }
 
    private void saveAmbientImage(Uri imageUri) {
-       if (DEBUG) Log.i(TAG, "Save ambient image " + " " + imageUri);
-       try {
-           final InputStream imageStream = mContext.getContentResolver().openInputStream(imageUri);
-           File file = new File(mContext.getFilesDir(), AMBIENT_IMAGE_FILE_NAME);
-           if (file.exists()) {
-               file.delete();
-           }
-           FileOutputStream output = new FileOutputStream(file);
-           byte[] buffer = new byte[8 * 1024];
-           int read;
-
-           while ((read = imageStream.read(buffer)) != -1) {
-               output.write(buffer, 0, read);
-           }
-           output.flush();
-           if (DEBUG) Log.i(TAG, "Saved ambient image " + " " + file.getAbsolutePath());
-       } catch (IOException e) {
-           Log.e(TAG, "Save ambient image failed " + " " + imageUri);
-       }
+       mGamma.saveCustomFileFromString(imageUri, AMBIENT_IMAGE_FILE_NAME);
    }
 
    private void loadAmbientImage() {
-       mImage = null;
-       File file = new File(mContext.getFilesDir(), AMBIENT_IMAGE_FILE_NAME);
-       if (file.exists()) {
-           if (DEBUG) Log.i(TAG, "Load ambient image");
-           final Bitmap image = BitmapFactory.decodeFile(file.getAbsolutePath());
-           mImage = new BitmapDrawable(mContext.getResources(), ImageHelper.resizeMaxDeviceSize(mContext, image));
-       }
+       mImage = mGamma.getCustomImageFromString(AMBIENT_IMAGE_FILE_NAME);
    }
 
    public Drawable getCurrent() {

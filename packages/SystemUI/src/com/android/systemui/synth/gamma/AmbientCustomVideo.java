@@ -50,19 +50,19 @@ import java.io.InputStream;
 import java.util.Calendar;
 
 import com.android.systemui.R;
+import com.android.systemui.Dependency;
 
 public class AmbientCustomVideo extends FrameLayout {
 
-   public static final String TAG = "AmbientCustomVideo";
-   private static final boolean DEBUG = true;
-   private static final String AMBIENT_VIDEO_FILE_NAME = "custom_file_ambient_video";
+   private final String AMBIENT_VIDEO_FILE_NAME = "custom_file_ambient_video";
 
    private VideoView mCustomVideo;
    private String mVideo;
 
+   private Gamma mGamma;
+
    public AmbientCustomVideo(Context context) {
        this(context, null);
-       mCustomVideo = (VideoView) findViewById(R.id.custom_video);
    }
 
    public AmbientCustomVideo(Context context, AttributeSet attrs) {
@@ -75,10 +75,13 @@ public class AmbientCustomVideo extends FrameLayout {
 
    public AmbientCustomVideo(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
        super(context, attrs, defStyleAttr, defStyleRes);
-       if (DEBUG) Log.d(TAG, "new");
+       mCustomVideo = (VideoView) findViewById(R.id.custom_video);
+       mGamma = Dependency.get(Gamma.class);
    }
 
    public void update() {
+        mCustomVideo = (VideoView) findViewById(R.id.custom_video);
+        mGamma = Dependency.get(Gamma.class);
         String videoUri = Settings.System.getStringForUser(mContext.getContentResolver(),
               Settings.System.SYNTHOS_AMBIENT_CUSTOM_VIDEO,
               UserHandle.USER_CURRENT);
@@ -90,34 +93,11 @@ public class AmbientCustomVideo extends FrameLayout {
    }
 
    private void saveAmbientVideo(Uri videoUri) {
-       if (DEBUG) Log.i(TAG, "Save ambient video " + " " + videoUri);
-       try {
-           final InputStream videoStream = mContext.getContentResolver().openInputStream(videoUri);
-           File file = new File(mContext.getFilesDir(), AMBIENT_VIDEO_FILE_NAME);
-           if (file.exists()) {
-               file.delete();
-           }
-           FileOutputStream output = new FileOutputStream(file);
-           byte[] buffer = new byte[8 * 1024];
-           int read;
-
-           while ((read = videoStream.read(buffer)) != -1) {
-               output.write(buffer, 0, read);
-           }
-           output.flush();
-           if (DEBUG) Log.i(TAG, "Saved ambient video " + " " + file.getAbsolutePath());
-       } catch (IOException e) {
-           Log.e(TAG, "Save ambient video failed " + " " + videoUri);
-       }
+       mGamma.saveCustomFileFromString(videoUri, AMBIENT_VIDEO_FILE_NAME);
    }
 
    private void loadAmbientVideo() {
-       mVideo = null;
-       File file = new File(mContext.getFilesDir(), AMBIENT_VIDEO_FILE_NAME);
-       if (file.exists()) {
-           if (DEBUG) Log.i(TAG, "Load ambient video");
-           mVideo = file.getAbsolutePath();
-       }
+       mVideo = mGamma.getCustomVideoPathFromString(AMBIENT_VIDEO_FILE_NAME);
    }
 
    public String getCurrent() {
