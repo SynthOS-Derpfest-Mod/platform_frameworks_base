@@ -6941,6 +6941,14 @@ public final class Settings {
 
         public static final String SYNTHUI_WEATHER = "synthui_weather";
 
+        public static final String QS_PANEL_TYPE_BACKGROUND = "qs_panel_type_background";
+
+        private static final Validator QS_PANEL_TYPE_BACKGROUND_VALIDATOR =
+                ANY_INTEGER_VALIDATOR;
+
+        public static final String QS_PANEL_CUSTOM_IMAGE = "qs_panel_custom_image";
+
+        public static final String QS_PANEL_CUSTOM_IMAGE_BLUR = "qs_panel_custom_image_blur";
 
         /**
         * Visualizer in QSPanel
@@ -8008,6 +8016,7 @@ public final class Settings {
             VALIDATORS.put(SYNTHOS_AMBIENT_TEXT_TYPE_COLOR, SYNTHOS_AMBIENT_TEXT_TYPE_COLOR_VALIDATOR);
             VALIDATORS.put(SYNTHUI_COLOR_TYPE_CLOCK_QSEXPANDED, SYNTHUI_COLOR_TYPE_CLOCK_QSEXPANDED_VALIDATOR);
             VALIDATORS.put(SYNTHUI_COLOR_TYPE_DATE_QSEXPANDED, SYNTHUI_COLOR_TYPE_DATE_QSEXPANDED_VALIDATOR);
+            VALIDATORS.put(QS_PANEL_TYPE_BACKGROUND, QS_PANEL_TYPE_BACKGROUND_VALIDATOR);
             VALIDATORS.put(VOLUME_DIALOG_TIMEOUT,VOLUME_DIALOG_TIMEOUT_VALIDATOR);
         }
 

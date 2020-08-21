@@ -160,26 +160,98 @@ public class ImageHelper {
         return image;
     }
 
-    public static Bitmap getRoundedCornerBitmap(Bitmap bitmap) {
+    public static Bitmap scaleCenterCrop(Bitmap source, int newWidth, int newHeight) {
+        int sourceWidth = source.getWidth();
+        int sourceHeight = source.getHeight();
+
+        // Compute the scaling factors to fit the new height and width, respectively.
+        // To cover the final image, the final scaling will be the bigger
+        // of these two.
+        float xScale = (float) newWidth / sourceWidth;
+        float yScale = (float) newHeight / sourceHeight;
+        float scale = Math.max(xScale, yScale);
+
+        // Now get the size of the source bitmap when scaled
+        float scaledWidth = scale * sourceWidth;
+        float scaledHeight = scale * sourceHeight;
+
+        // Let's find out the upper left coordinates if the scaled bitmap
+        // should be centered in the new size give by the parameters
+        float left = (newWidth - scaledWidth) / 2;
+        float top = (newHeight - scaledHeight) / 2;
+
+        // The target rectangle for the new, scaled version of the source bitmap will now
+        // be
+        RectF targetRect = new RectF(left, top, left + scaledWidth, top + scaledHeight);
+
+        // Finally, we create a new bitmap of the specified size and draw our new,
+        // scaled bitmap onto it.
+        Bitmap dest = Bitmap.createBitmap(newWidth, newHeight, source.getConfig());
+        Canvas canvas = new Canvas(dest);
+        canvas.drawBitmap(source, null, targetRect, null);
+
+        return dest;
+    }
+
+    public static Bitmap drawableToBitmap(Drawable drawable) {
+        Bitmap bitmap = null;
+
+        if (drawable instanceof BitmapDrawable) {
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+            if(bitmapDrawable.getBitmap() != null) {
+                return bitmapDrawable.getBitmap();
+            }
+        }
+
+        if(drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
+            bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888); // Single color bitmap will be created of 1x1 pixel
+        } else {
+            bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        }
+
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bitmap;
+    }
+
+    public static Bitmap getRoundedCornerBitmap(Bitmap bitmap, int round, int width, int height, int color) {
         if (bitmap == null) {
             return null;
         }
-        Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(),
+
+        int zeroWidth = (width <= 0) ? bitmap.getWidth() : width;
+        int zeroHeight = (height <= 0) ? bitmap.getHeight() : height;
+        int rectWidth = (bitmap.getWidth() <= width) ? zeroWidth : bitmap.getWidth();
+        int rectHeight = (bitmap.getWidth() <= height) ? zeroHeight : bitmap.getWidth();
+
+        Bitmap output = Bitmap.createBitmap(zeroWidth, zeroHeight,
                 Config.ARGB_8888);
         Canvas canvas = new Canvas(output);
 
-        final int color = 0xff424242;
         final Paint paint = new Paint();
-        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
-        final RectF rectF = new RectF(rect);
-        final float roundPx = 24;
+        final Rect rect = new Rect(0, 0, rectWidth, rectHeight);
+        final Rect roundRect = new Rect(0, 0, zeroWidth, zeroHeight);
+        final RectF rectF = new RectF(roundRect);
         paint.setAntiAlias(true);
         canvas.drawARGB(0, 0, 0, 0);
         paint.setColor(color);
-        canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+        canvas.drawRoundRect(rectF, round, round, paint);
         paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
         canvas.drawBitmap(bitmap, rect, rect, paint);
         return output;
+    }
+
+    public static Bitmap getRoundedCornerBitmap(Bitmap bitmap, int round, int width, int height) {
+        return getRoundedCornerBitmap(bitmap, round, width, height, 0xff424242);
+    }
+
+    public static Bitmap getRoundedCornerBitmap(Bitmap bitmap, int round) {
+        return getRoundedCornerBitmap(bitmap, round, 0, 0);
+    }
+
+    public static Bitmap getRoundedCornerBitmap(Bitmap bitmap) {
+        return getRoundedCornerBitmap(bitmap, 24);
     }
 
     public static Bitmap getCircleBitmap(Bitmap bitmap) {
