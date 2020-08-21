@@ -61,10 +61,12 @@ import com.android.systemui.statusbar.phone.KeyguardIndicationTextView;
 import com.android.systemui.statusbar.phone.LockIcon;
 import com.android.systemui.statusbar.phone.LockscreenGestureLogger;
 import com.android.systemui.statusbar.phone.ShadeController;
+import com.android.systemui.statusbar.phone.StatusBar;
 import com.android.systemui.statusbar.phone.StatusBarKeyguardViewManager;
 import com.android.systemui.statusbar.phone.UnlockMethodCache;
 import com.android.systemui.statusbar.policy.AccessibilityController;
 import com.android.systemui.statusbar.policy.UserInfoController;
+import com.android.systemui.synth.gamma.MediaCardNotification;
 import com.android.systemui.util.wakelock.SettableWakeLock;
 import com.android.systemui.util.wakelock.WakeLock;
 import com.android.systemui.tuner.TunerService;
@@ -148,6 +150,10 @@ public class KeyguardIndicationController implements StateListener,
 
     private BatteryBarView mBatteryBar;
 
+    // synth additions
+    private MediaCardNotification mMediaCard;
+    private StatusBar mStatusBar;
+
     /**
      * Creates a new KeyguardIndicationController and registers callbacks.
      */
@@ -214,10 +220,15 @@ public class KeyguardIndicationController implements StateListener,
         mIndicationArea = indicationArea;
         mTextView = indicationArea.findViewById(R.id.keyguard_indication_text);
         mBatteryBar = indicationArea.findViewById(R.id.battery_bar_view);
+        mMediaCard = indicationArea.findViewById(R.id.media_card_aod_notification);
         mInitialTextColorState = mTextView != null ?
                 mTextView.getTextColors() : ColorStateList.valueOf(Color.WHITE);
         mDisclosure = indicationArea.findViewById(R.id.keyguard_indication_enterprise_disclosure);
         updateIndication(false /* animate */);
+    }
+
+    public void setStatusBar(StatusBar statusbar) {
+        mStatusBar = statusbar;
     }
 
     private boolean handleLockLongClick(View view) {
@@ -404,6 +415,8 @@ public class KeyguardIndicationController implements StateListener,
                     KEYGUARD_SHOW_BATTERY_BAR, 1) == 1;
             final boolean showBatteryBarAlways = Settings.System.getInt(mContext.getContentResolver(),
                     KEYGUARD_SHOW_BATTERY_BAR_ALWAYS, 0) == 1;
+            final boolean showMediaCard = Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.MEDIA_CARD_AMBIENT, 1) == 1;
             int chargingInfoFont = Settings.System.getInt(mContext.getContentResolver(),
                     KEYGUARD_BATTERY_INFO_FONT, 28);
             int batteryBarColor = Settings.System.getInt(mContext.getContentResolver(),
@@ -563,10 +576,15 @@ public class KeyguardIndicationController implements StateListener,
             // Walk down a precedence-ordered list of what indication
             // should be shown based on user or device state
             mBatteryBar.setVisibility(View.GONE);
+            mMediaCard.setVisibility(View.GONE);
+            mMediaCard.initDependencies(mStatusBar.getMediaManager(), mContext);
             if (mDozing) {
                 // When dozing we ignore any text color and use white instead, because
                 // colors can be hard to read in low brightness.
                 mTextView.setTextColor(Color.WHITE);
+                if (showMediaCard) {
+                    mMediaCard.setVisibility(View.VISIBLE);
+                }
                 if (!TextUtils.isEmpty(mTransientIndication)) {
                     mTextView.switchIndication(mTransientIndication);
                 } else if (!TextUtils.isEmpty(mAlignmentIndication)) {

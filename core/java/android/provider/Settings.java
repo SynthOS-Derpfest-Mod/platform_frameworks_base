@@ -7048,6 +7048,13 @@ public final class Settings {
         public static final String SYNTHOS_MUSIC_VOLUME_PANEL_TEXT = "synthos_music_volume_panel_text";
 
         /**
+        * Media Card in Ambient
+        * by.tikkiX2
+        * @hide
+        */
+        public static final String MEDIA_CARD_AMBIENT = "media_card_ambient";
+
+        /**
         * Custom Font from File
         * by.tikkiX2
         * @hide

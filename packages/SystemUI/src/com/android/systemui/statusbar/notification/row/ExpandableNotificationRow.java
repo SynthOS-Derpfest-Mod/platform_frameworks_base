@@ -1190,6 +1190,10 @@ public class ExpandableNotificationRow extends ActivatableNotificationView
         return mMenuRow;
     }
 
+    public String getAppName() {
+        return mAppName;
+    }
+
     @Nullable
     public NotificationMenuRowPlugin getProvider() {
         return mMenuRow;

@@ -396,6 +396,26 @@ public class NotificationMediaManager implements Dumpable {
         }
     }
 
+    public MediaController getMediaController() {
+        if (mMediaController == null) {
+            return null;
+        }
+        return mMediaController;
+    }
+
+    public NotificationEntry getNotificationEntry() {
+        ArrayList<NotificationEntry> activeNotifications =
+                mEntryManager.getNotificationData().getActiveNotifications();
+        final int N = activeNotifications.size();
+        for (int i = 0; i < N; i++) {
+            final NotificationEntry entry = activeNotifications.get(i);
+            if (entry.isMediaNotification()) {
+                return entry;
+            }
+        }
+        return null;
+    }
+
     public void addCallback(MediaListener callback) {
         mMediaListeners.add(callback);
         callback.onMetadataOrStateChanged(mMediaMetadata,

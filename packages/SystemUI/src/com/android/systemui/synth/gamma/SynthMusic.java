@@ -24,6 +24,7 @@ import android.content.ContentResolver;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -60,22 +61,22 @@ public class SynthMusic extends RelativeLayout implements NotificationMediaManag
    private static final boolean DEBUG = true;
    private static final String TAG = "SynthMusic";
 
-   private Context mContext;
-   private NotificationMediaManager mMediaManager;
-   private MediaController mMediaController;
+   public Context mContext;
+   public NotificationMediaManager mMediaManager;
+   public MediaController mMediaController;
    private final Handler mHandler = new Handler();
 
-   private CharSequence mMediaTitle;
-   private CharSequence mMediaArtist;
-   private Drawable mMediaArtwork;
-   private boolean mMediaIsVisible;
+   public CharSequence mMediaTitle;
+   public CharSequence mMediaArtist;
+   public Drawable mMediaArtwork;
+   public boolean mMediaIsVisible;
 
-   private TextView mTitle;
-   private TextView mArtist;
-   private ImageView mArtwork;
-   private int shadow;
-   private int colorArtwork;
-   private int colorTextIcons;
+   public TextView mTitle;
+   public TextView mArtist;
+   public ImageView mArtwork;
+   public int shadow;
+   public int colorArtwork;
+   public int colorTextIcons;
 
    private ImageButton mPrevious;
    private ImageButton mPlayPause;
@@ -136,13 +137,31 @@ public class SynthMusic extends RelativeLayout implements NotificationMediaManag
       updateIconPlayPause();
    }
 
-   public void updateIconPlayPause() {
-       if ( !(mMediaManager.getPlaybackStateIsEqual(PlaybackState.STATE_PLAYING)) ) {
-           mPlayPause.setImageResource(R.drawable.ic_play_arrow_white);
-       } else {
-           mPlayPause.setImageResource(R.drawable.ic_pause_white);
-       }
-   }
+    public void updateIconPlayPause() {
+
+        AnimationDrawable animationPlayToPause = new AnimationDrawable();
+        animationPlayToPause.addFrame(mContext.getResources().getDrawable(R.drawable.ic_play_arrow_white), 250);
+        animationPlayToPause.addFrame(mContext.getResources().getDrawable(R.drawable.ic_pause_white), 250);
+        animationPlayToPause.setOneShot(true);
+
+        AnimationDrawable animationPauseToPlay = new AnimationDrawable();
+        animationPauseToPlay.addFrame(mContext.getResources().getDrawable(R.drawable.ic_pause_white), 250);
+        animationPauseToPlay.addFrame(mContext.getResources().getDrawable(R.drawable.ic_play_arrow_white), 250);
+        animationPauseToPlay.setOneShot(true);
+
+        try {
+            if ( !(mMediaManager.getPlaybackStateIsEqual(PlaybackState.STATE_PLAYING)) ) {
+                mPlayPause.setImageDrawable(animationPauseToPlay);
+                animationPauseToPlay.start();
+            } else {
+                mPlayPause.setImageDrawable(animationPlayToPause);
+                animationPlayToPause.start();
+            }
+        } catch (Exception e) {
+            Log.d(TAG, e.getMessage());
+        }
+
+    }
 
    public void updateObjects() {
       if (mTitle == null || mArtist == null || mArtwork == null || mPrevious == null || mPlayPause == null || mNext == null) {
