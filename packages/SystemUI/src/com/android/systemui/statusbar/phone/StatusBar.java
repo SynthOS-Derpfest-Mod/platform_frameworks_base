@@ -273,6 +273,7 @@ import com.android.systemui.statusbar.policy.UserInfoController;
 import com.android.systemui.statusbar.policy.UserInfoControllerImpl;
 import com.android.systemui.statusbar.policy.UserSwitcherController;
 import com.android.systemui.statusbar.policy.ZenModeController;
+import com.android.systemui.synth.gamma.Gamma;
 import com.android.systemui.tuner.TunerService;
 import com.android.systemui.util.InjectionInflationController;
 import com.android.systemui.volume.VolumeComponent;
@@ -607,6 +608,7 @@ public class StatusBar extends SystemUI implements DemoMode,
     private VisualizerView mVisualizerView;
     // LS visualizer on Ambient Display
     private boolean mAmbientVisualizer;
+    private Gamma mGamma = Dependency.get(Gamma.class);
 
     private boolean mWallpaperSupportsAmbientMode;
     private VolumePluginManager mVolumePluginManager;
@@ -848,6 +850,12 @@ public class StatusBar extends SystemUI implements DemoMode,
                     Settings.System.QS_HEADER_STYLE),
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.SYNTHOS_VOLUME_PANEL_BACKGROUND_IMAGE),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.SYSTEMUI_PLUGIN_VOLUME),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.SWITCH_STYLE),
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
@@ -948,6 +956,10 @@ public class StatusBar extends SystemUI implements DemoMode,
                     updateBrightnessSliderOverlay();
             } else if (uri.equals(Settings.System.getUriFor(Settings.System.LOCKSCREEN_MAX_NOTIF_CONFIG))) {
                 setMaxKeyguardNotifConfig();
+            } else if (uri.equals(Settings.System.getUriFor(Settings.System.SYNTHOS_VOLUME_PANEL_BACKGROUND_IMAGE)) ||
+                    uri.equals(Settings.System.getUriFor(Settings.System.SYSTEMUI_PLUGIN_VOLUME))) {
+                String imageUri = Settings.System.getStringForUser(mContext.getContentResolver(), Settings.System.QS_PANEL_CUSTOM_IMAGE, UserHandle.USER_CURRENT);
+                if (imageUri != null) mGamma.saveCustomFileFromString(Uri.parse(Settings.System.getStringForUser(mContext.getContentResolver(), Settings.System.SYNTHOS_VOLUME_PANEL_BACKGROUND_IMAGE, UserHandle.USER_CURRENT)), "synthos_volume_panel_background_image");
             } else if (uri.equals(Settings.System.getUriFor(Settings.System.SYNTHUI_QS_HEADER_LARGE))) {
                     updateQSHeaderSizeOverlay();
             }

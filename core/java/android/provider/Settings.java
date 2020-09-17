@@ -6986,6 +6986,15 @@ public final class Settings {
 
         public static final String SYNTHOS_VOLUME_PANEL_PADDING_BOTTOM = "synthos_volume_panel_padding_bottom";
 
+        public static final String SYNTHOS_VOLUME_PANEL_BACKGROUND_TYPE = "synthos_volume_panel_background_type";
+        /** @hide */
+        private static final Validator SYNTHOS_VOLUME_PANEL_BACKGROUND_TYPE_VALIDATOR =
+                new SettingsValidators.InclusiveIntegerRangeValidator(0, 3);
+
+        public static final String SYNTHOS_VOLUME_PANEL_BACKGROUND_IMAGE = "synthos_volume_panel_background_image";
+
+        public static final String SYNTHOS_VOLUME_PANEL_BACKGROUND_COLOR = "synthos_volume_panel_background_color";
+
         /**
          * Volume Panel alignment
          * 0 - TOP
@@ -7461,6 +7470,7 @@ public final class Settings {
             SYNTHOS_AMBIENT_TEXT_COLOR,
             SYNTHOS_AMBIENT_TEXT_TYPE_COLOR,
             VOLUME_DIALOG_TIMEOUT,
+            SYNTHOS_VOLUME_PANEL_BACKGROUND_TYPE,
         };
 
         /**
@@ -8055,6 +8065,7 @@ public final class Settings {
             VALIDATORS.put(SYNTHUI_COLOR_TYPE_DATE_QSEXPANDED, SYNTHUI_COLOR_TYPE_DATE_QSEXPANDED_VALIDATOR);
             VALIDATORS.put(QS_PANEL_TYPE_BACKGROUND, QS_PANEL_TYPE_BACKGROUND_VALIDATOR);
             VALIDATORS.put(VOLUME_DIALOG_TIMEOUT,VOLUME_DIALOG_TIMEOUT_VALIDATOR);
+            VALIDATORS.put(SYNTHOS_VOLUME_PANEL_BACKGROUND_TYPE, SYNTHOS_VOLUME_PANEL_BACKGROUND_TYPE_VALIDATOR);
         }
 
         /**
