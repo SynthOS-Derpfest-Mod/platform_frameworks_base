@@ -105,6 +105,8 @@ public class KeyguardSliceView extends LinearLayout implements View.OnClickListe
     TextView mTitle;
     private RelativeLayout mRowContainer;
     private LinearLayout mTitleContainer;
+    private View mMediaCoolDivider;
+    private boolean mDividerVisibility = false;
     private Row mRow;
     private int mTextColor;
     private float mDarkAmount = 0;
@@ -154,6 +156,7 @@ public class KeyguardSliceView extends LinearLayout implements View.OnClickListe
         mTitle = findViewById(R.id.title);
         mRowContainer = findViewById(R.id.row_maincenter);
         mRow = findViewById(R.id.row);
+        mMediaCoolDivider = findViewById(R.id.cool_divider_media);
         mTextColor = Utils.getColorAttrDefaultColor(mContext, R.attr.wallpaperTextColor);
         refreshDateSize();
         mIconSize = (int) mRowTextSize;
@@ -207,6 +210,7 @@ public class KeyguardSliceView extends LinearLayout implements View.OnClickListe
             mTitle.setVisibility(GONE);
             mTitleContainer.setVisibility(GONE);
             mRow.setVisibility(GONE);
+            mMediaCoolDivider.setVisibility(GONE);
             mHasHeader = false;
             if (mContentChangeListener != null) {
                 mContentChangeListener.run();
@@ -241,9 +245,11 @@ public class KeyguardSliceView extends LinearLayout implements View.OnClickListe
         if (!mHasHeader) {
             mTitle.setVisibility(GONE);
             mTitleContainer.setVisibility(GONE);
+            mMediaCoolDivider.setVisibility(GONE);
         } else {
             mTitle.setVisibility(VISIBLE);
             mTitleContainer.setVisibility(VISIBLE);
+            mMediaCoolDivider.setVisibility(mDividerVisibility ? VISIBLE : GONE);
 
             RowContent header = lc.getHeader();
             SliceItem mainTitle = header.getTitleItem();
@@ -258,6 +264,8 @@ public class KeyguardSliceView extends LinearLayout implements View.OnClickListe
         final int subItemsCount = subItems.size();
         final int blendedColor = getTextColor();
         final int startIndex = mHasHeader ? 1 : 0; // First item is header; skip it
+        LinearLayout.LayoutParams coolDividerParams = (LinearLayout.LayoutParams) mMediaCoolDivider.getLayoutParams();
+
         if (mClockSelection) {
             switch (mTextClockAlignment) {
                 case 0:
@@ -265,25 +273,31 @@ public class KeyguardSliceView extends LinearLayout implements View.OnClickListe
                 default:
                     mRowContainer.setGravity(Gravity.START);
                     mTitleContainer.setGravity(Gravity.START);
+                    coolDividerParams.gravity = (Gravity.START);
                     break;
                 case 1:
                     mRowContainer.setGravity(Gravity.CENTER);
                     mTitleContainer.setGravity(Gravity.CENTER);
+                    coolDividerParams.gravity = (Gravity.CENTER);
                     break;
                 case 2:
                 case 3:
                     mRowContainer.setGravity(Gravity.END);
                     mTitleContainer.setGravity(Gravity.END);
+                    coolDividerParams.gravity = (Gravity.END);
                     break;
             }
         } else if (mAlignLeft){
             mRowContainer.setGravity(Gravity.LEFT);
             mTitleContainer.setGravity(Gravity.LEFT);
+            coolDividerParams.gravity = (Gravity.LEFT);
         } else {
             mRowContainer.setGravity(Gravity.CENTER);
             mTitleContainer.setGravity(Gravity.CENTER);
+            coolDividerParams.gravity = (Gravity.CENTER);
         }
         mRow.setVisibility(subItemsCount > 0 ? VISIBLE : GONE);
+        mMediaCoolDivider.setLayoutParams(coolDividerParams);
 
         for (int i = startIndex; i < subItemsCount; i++) {
             RowContent rc = (RowContent) subItems.get(i);
@@ -346,6 +360,11 @@ public class KeyguardSliceView extends LinearLayout implements View.OnClickListe
             mContentChangeListener.run();
         }
         Trace.endSection();
+    }
+
+    public void setDividerVisibility(int visibility) {
+        mMediaCoolDivider.setVisibility(visibility);
+        mDividerVisibility = (visibility == View.VISIBLE);
     }
 
     public void setDarkAmount(float darkAmount) {

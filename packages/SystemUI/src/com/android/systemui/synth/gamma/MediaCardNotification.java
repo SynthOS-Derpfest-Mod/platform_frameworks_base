@@ -64,6 +64,7 @@ public class MediaCardNotification extends SynthMusic {
     private TextView mPackage;
     private ImageView mIcon;
     private boolean mAnimate = false;
+    private boolean mUpdate = false;
 
     private View mTextContainer;
     private View mInfoControlContainer;
@@ -83,6 +84,33 @@ public class MediaCardNotification extends SynthMusic {
     public MediaCardNotification(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         this.setWillNotDraw(false);
+    }
+
+    /**
+     * Called whenever new media metadata is available.
+     * @param metadata New metadata.
+     */
+    @Override
+    public void onMetadataOrStateChanged(MediaMetadata metadata, @PlaybackState.State int state) {
+
+          CharSequence title = metadata == null ? null : metadata.getText(
+                 MediaMetadata.METADATA_KEY_TITLE);
+          CharSequence artist = metadata == null ? null : metadata.getText(
+                 MediaMetadata.METADATA_KEY_ARTIST);
+          Bitmap artwork = metadata == null ? null : metadata.getBitmap(
+                 MediaMetadata.METADATA_KEY_ALBUM_ART);
+          Drawable d = new BitmapDrawable(mContext.getResources(), artwork);
+
+          mMediaTitle = title;
+          mMediaArtist = artist;
+          mMediaArtwork = d;
+
+          if (mMediaArtwork != null && (state == PlaybackState.STATE_PAUSED || state == PlaybackState.STATE_PLAYING)) {
+              update();
+              setVisibility(mUpdate ? View.VISIBLE : View.GONE);
+          } else {
+              setVisibility(View.GONE);
+          }
     }
 
     @Override
@@ -155,6 +183,15 @@ public class MediaCardNotification extends SynthMusic {
             }
         } catch (Exception e) {
             Log.d("MediaCard", e.getMessage());
+        }
+    }
+
+    public void setUpdate(boolean value) {
+        mUpdate = value;
+        if (value) {
+            setVisibility(View.VISIBLE);
+        } else {
+            setVisibility(View.GONE);
         }
     }
 

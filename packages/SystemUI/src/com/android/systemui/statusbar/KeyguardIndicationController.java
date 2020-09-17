@@ -576,14 +576,14 @@ public class KeyguardIndicationController implements StateListener,
             // Walk down a precedence-ordered list of what indication
             // should be shown based on user or device state
             mBatteryBar.setVisibility(View.GONE);
-            mMediaCard.setVisibility(View.GONE);
+            mMediaCard.setUpdate(false);
             mMediaCard.initDependencies(mStatusBar.getMediaManager(), mContext);
             if (mDozing) {
                 // When dozing we ignore any text color and use white instead, because
                 // colors can be hard to read in low brightness.
                 mTextView.setTextColor(Color.WHITE);
                 if (showMediaCard) {
-                    mMediaCard.setVisibility(View.VISIBLE);
+                    mMediaCard.setUpdate(true);
                 }
                 if (!TextUtils.isEmpty(mTransientIndication)) {
                     mTextView.switchIndication(mTransientIndication);

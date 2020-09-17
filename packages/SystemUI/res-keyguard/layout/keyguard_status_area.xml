@@ -47,6 +47,15 @@
 
     </LinearLayout>
 
+    <View
+        android:id="@+id/cool_divider_media"
+        android:layout_width="52dp"
+        android:layout_height="6dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/date_owner_info_margin"
+        android:layout_marginBottom="@dimen/date_owner_info_margin"
+        android:background="@drawable/cool_divider" />
+
     <RelativeLayout
         android:id="@+id/row_maincenter"
         android:layout_width="match_parent"

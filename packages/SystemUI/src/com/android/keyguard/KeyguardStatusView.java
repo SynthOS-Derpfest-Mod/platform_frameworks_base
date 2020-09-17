@@ -939,6 +939,7 @@ public class KeyguardStatusView extends GridLayout implements
             if (mShowDividers){
                 mCoolDividerOne.setVisibility(View.VISIBLE);
                 mCoolDividerTwo.setVisibility(View.VISIBLE);
+                mKeyguardSlice.setDividerVisibility(View.VISIBLE);
                 if (mShowWeather && mOmniStyle){
                     mCoolDividerThree.setVisibility(View.VISIBLE);
                 } else {
@@ -948,6 +949,7 @@ public class KeyguardStatusView extends GridLayout implements
                 mCoolDividerOne.setVisibility(View.GONE);
                 mCoolDividerTwo.setVisibility(View.GONE);
                 mCoolDividerThree.setVisibility(View.GONE);
+                mKeyguardSlice.setDividerVisibility(View.GONE);
             }
         updateDateStyles();
         updateClockAlignment();
