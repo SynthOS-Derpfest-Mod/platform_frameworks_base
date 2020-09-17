@@ -30,6 +30,7 @@
     android:clipChildren="false"
     android:clipToPadding="false">
 
+    <!-- layout_marginBottom="10dp"  -->
     <FrameLayout
         android:id="@+id/qs_brightness_slider_parent"
         android:layout_width="match_parent"
@@ -58,6 +59,7 @@
             android:layout_gravity="center_vertical|left"
             android:src="@drawable/ic_min_brightness"
             android:layout_marginLeft="30dp"
+            android:tint="@color/brightness_slider_icons"
             android:scaleType="centerInside"/>
 
         <ImageView
@@ -66,6 +68,7 @@
             android:layout_gravity="center_vertical|right"
             android:src="@drawable/ic_max_brightness"
             android:layout_marginRight="30dp"
+            android:tint="@color/brightness_slider_icons"
             android:scaleType="centerInside"/>
 
     </FrameLayout>

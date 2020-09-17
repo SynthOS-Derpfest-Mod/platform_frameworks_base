@@ -23,21 +23,24 @@
 
     <!-- Custom header -->
     <dimen name="qs_header_image_offset">0dp</dimen>
+    <!-- DEFAULT= 182dp -->
+    <dimen name="qs_panel_header_image_offset">190dp</dimen>
     <dimen name="qs_header_image_side_margin">4dp</dimen>
     <dimen name="qs_header_image_top_margin">4dp</dimen>
-    <dimen name="qs_header_image_bottom_margin">4dp</dimen>
+    <dimen name="qs_header_image_secondary_top_margin">0dp</dimen>
+    <dimen name="qs_header_image_bottom_margin">0dp</dimen>
 
     <!-- SynthUI -->
     <dimen name="qs_panel_image_offset">178dp</dimen>
-    <dimen name="qs_status_icons_offset">92dp</dimen>
+    <dimen name="qs_status_icons_offset">80dp</dimen>
     <dimen name="qs_panel_margin_status_icons">92dp</dimen>
-    <dimen name="qs_panel_secundary_top_margin">194dp</dimen>
-    <dimen name="qs_panel_top_margin">194dp</dimen>
+    <dimen name="qs_panel_secondary_top_margin">194dp</dimen>
+    <dimen name="qs_panel_top_margin">198dp</dimen>
     <dimen name="qs_panel_all_top_margin">202dp</dimen>
     <dimen name="qs_panel_image_side_margin">4dp</dimen>
     <dimen name="qs_panel_image_top_margin">4dp</dimen>
     <dimen name="qs_panel_image_bottom_margin">8dp</dimen>
-    <dimen name="qs_expanded_status_icons_bottom_margin">0dp</dimen>
+    <dimen name="qs_expanded_status_icons_bottom_margin">14dp</dimen>
 
     <!-- Network traffic monitor -->
     <dimen name="net_traffic_multi_text_size">8dp</dimen>

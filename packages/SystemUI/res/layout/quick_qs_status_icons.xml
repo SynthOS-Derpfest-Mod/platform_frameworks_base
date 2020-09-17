@@ -39,7 +39,7 @@
     	  android:id="@+id/SynthClock"
     	  android:layout_width="wrap_content"
     	  android:layout_height="wrap_content"
-    	  android:minWidth="48dp"
+    	  android:minWidth="40dp"
     	  android:layout_gravity="top|start"
     	  android:format12Hour="hh:mm a"
     	  android:format24Hour="HH:mm"
@@ -50,6 +50,7 @@
             android:id="@+id/date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+        	  android:minWidth="40dp"
             android:layout_gravity="start|center_vertical"
             android:gravity="center_vertical"
             android:singleLine="true"
@@ -58,46 +59,60 @@
 
     </LinearLayout>
 
-    <com.android.systemui.omni.CurrentWeatherView
-        android:id="@+id/qs_weather_container"
+    <LinearLayout
+        android:id="@+id/synthClockWeatherContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-    	  android:layout_marginTop="@dimen/qs_panel_image_top_margin"
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical|end"
+    	  android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/current"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|top"
-        android:orientation="horizontal"
-        android:gravity="center_vertical" >
+        <com.android.systemui.omni.CurrentWeatherView
+            android:id="@+id/qs_weather_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+        	  android:layout_marginTop="@dimen/qs_panel_image_top_margin"
+            android:layout_gravity="center_vertical|end">
 
-    <TextView
-        android:id="@+id/left_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:visibility="gone" />
+        <LinearLayout
+            android:id="@+id/current"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|top"
+            android:orientation="horizontal"
+            android:gravity="center_vertical" >
 
-    <ImageView
-        android:id="@+id/current_image"
-        android:layout_width="@dimen/current_weather_image_size"
-        android:layout_height="@dimen/current_weather_image_size"
-        android:gravity="center_vertical"
-        android:scaleType="centerCrop"/>
+        <TextView
+            android:id="@+id/left_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:visibility="gone" />
 
-    <TextView
-        android:id="@+id/right_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:singleLine="true"
-        android:gravity="center_vertical"
-        style="@style/TextAppearance.StatusBar.Clock" />
+        <ImageView
+            android:id="@+id/current_image"
+            android:layout_width="@dimen/current_weather_image_size"
+            android:layout_height="@dimen/current_weather_image_size"
+            android:gravity="center_vertical"
+            android:scaleType="centerCrop"/>
+
+        <TextView
+            android:id="@+id/right_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:gravity="center_vertical"
+            style="@style/TextAppearance.StatusBar.Clock" />
+
+        </LinearLayout>
+        </com.android.systemui.omni.CurrentWeatherView>
+
+        <include
+            layout="@layout/synth_statusIcons"
+            android:id="@+id/synthStatusIconsContainer"
+            android:layout_gravity="center_vertical|end" />
 
     </LinearLayout>
-    </com.android.systemui.omni.CurrentWeatherView>
 
 </RelativeLayout>

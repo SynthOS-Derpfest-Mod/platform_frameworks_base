@@ -6950,6 +6950,8 @@ public final class Settings {
 
         public static final String SYNTHUI_STATUSICONS_QSEXPANDED = "synthui_statusicons_qsexpanded";
 
+        public static final String SYNTHUI_STATUSICONS_QS_STATUS = "synthui_statusicons_qs_status";
+
         public static final String SYNTHUI_STATUSINFO_QSEXPANDED = "synthui_statusinfo_qsexpanded";
 
         public static final String SYNTHUI_WEATHER = "synthui_weather";

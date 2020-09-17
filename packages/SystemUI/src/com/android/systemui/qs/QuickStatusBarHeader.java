@@ -127,6 +127,7 @@ public class QuickStatusBarHeader extends RelativeLayout implements
     protected QSTileHost mHost;
     private TintedIconManager mIconManager;
     private TouchAnimator mStatusIconsAlphaAnimator;
+    private TouchAnimator mStatusIconsExpandedAlphaAnimator;
     private TouchAnimator mHeaderTextContainerAlphaAnimator;
     private DualToneHandler mDualToneHandler;
 
@@ -156,6 +157,7 @@ public class QuickStatusBarHeader extends RelativeLayout implements
     private TextClock mSynthClockStatusView;
     private TextClock mSynthDateExpandedView;
     private View mStatusIconsContainer;
+    private View mStatusIconsExpanded;
     private View mStatusInfoContainer;
     private CurrentWeatherView mWeatherView;
     private BatteryMeterView mBatteryMeterView;
@@ -221,6 +223,9 @@ public class QuickStatusBarHeader extends RelativeLayout implements
                     this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System
                     .getUriFor(Settings.System.SYNTHUI_STATUSICONS_QSEXPANDED), false,
+                    this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.SYNTHUI_STATUSICONS_QS_STATUS), false,
                     this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System
                     .getUriFor(Settings.System.SYNTHUI_STATUSINFO_QSEXPANDED), false,
@@ -317,6 +322,9 @@ public class QuickStatusBarHeader extends RelativeLayout implements
         mRingerContainer = findViewById(R.id.ringer_container);
         mCarrierGroup = findViewById(R.id.carrier_group);
 
+        mStatusIconsExpanded = findViewById(R.id.synthStatusIconsExpanded);
+        mStatusIconsContainer = findViewById(R.id.synthStatusIconsContainer);
+        mStatusInfoContainer = findViewById(R.id.synth_info_container);
 
         updateResources();
 
@@ -349,8 +357,6 @@ public class QuickStatusBarHeader extends RelativeLayout implements
         mWeatherView = findViewById(R.id.qs_weather_container);
         mSynthClockExpandedView = findViewById(R.id.SynthClockExpanded);
         mSynthDateExpandedView = findViewById(R.id.SynthDateExpanded);
-        mStatusIconsContainer = findViewById(R.id.synthStatusIconsContainer);
-        mStatusInfoContainer = findViewById(R.id.synth_info_container);
         mSynthClockStatusView = findViewById(R.id.SynthClock);
 
         mSynthClockExpandedView.setTextColor(textColor);
@@ -521,6 +527,7 @@ public class QuickStatusBarHeader extends RelativeLayout implements
 
         setLayoutParams(lp);
 
+        updateStatusIconExpandedAlphaAnimator();
         updateStatusIconAlphaAnimator();
         updateHeaderTextContainerAlphaAnimator();
     }
@@ -585,6 +592,12 @@ public class QuickStatusBarHeader extends RelativeLayout implements
                 .build();
     }
 
+    private void updateStatusIconExpandedAlphaAnimator() {
+        mStatusIconsExpandedAlphaAnimator = new TouchAnimator.Builder()
+                .addFloat(mStatusIconsExpanded, "alpha", 0, 0, 1)
+                .build();
+    }
+
     private void updateHeaderTextContainerAlphaAnimator() {
         mHeaderTextContainerAlphaAnimator = new TouchAnimator.Builder()
                 .addFloat(mHeaderTextContainerView, "alpha", 0, 0, 1)
@@ -607,10 +620,18 @@ public class QuickStatusBarHeader extends RelativeLayout implements
 
     private void updateSynthStatusIcons() {
 
+        boolean isShowExpanded = Settings.System.getIntForUser(mContext.getContentResolver(),
+                        Settings.System.SYNTHUI_STATUSICONS_QSEXPANDED, 0,
+                        UserHandle.USER_CURRENT) == 1;
         boolean isShow = Settings.System.getIntForUser(mContext.getContentResolver(),
-                        Settings.System.SYNTHUI_STATUSICONS_QSEXPANDED, 1,
+                        Settings.System.SYNTHUI_STATUSICONS_QS_STATUS, 1,
                         UserHandle.USER_CURRENT) == 1;
 
+        if (isShowExpanded) {
+            mStatusIconsExpanded.setVisibility(View.VISIBLE);
+        } else {
+            mStatusIconsExpanded.setVisibility(View.GONE);
+        }
         if (isShow) {
             mStatusIconsContainer.setVisibility(View.VISIBLE);
         } else {
@@ -689,6 +710,10 @@ public class QuickStatusBarHeader extends RelativeLayout implements
             } else {
                 mHeaderTextContainerView.setVisibility(INVISIBLE);
             }
+        }
+
+        if (mStatusIconsExpandedAlphaAnimator != null) {
+            mStatusIconsExpandedAlphaAnimator.setPosition(keyguardExpansionFraction);
         }
     }
 
