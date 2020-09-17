@@ -5943,6 +5943,19 @@ public final class Settings {
                 ANY_INTEGER_VALIDATOR;
 
         /**
+         * Carrier Label Type Text
+         * 0: Default or Custom
+         * 1: Song
+         * 2: Album
+         * 3: Artist
+         * @hide
+         */
+        public static final String STATUS_BAR_CARRIER_TEXT_TYPE = "status_bar_carrier_text_type";
+        /** @hide */
+        private static final Validator STATUS_BAR_CARRIER_TEXT_TYPE_VALIDATOR =
+                ANY_INTEGER_VALIDATOR;
+
+        /**
          * custom carrier label. The value is
          * String.
          * @hide
@@ -7291,6 +7304,7 @@ public final class Settings {
             STATUS_BAR_LOGO_STYLE,
             STATUS_BAR_SHOW_CARRIER,
             CUSTOM_CARRIER_LABEL,
+            STATUS_BAR_CARRIER_TEXT_TYPE,
             STATUS_BAR_CARRIER_COLOR,
             STATUS_BAR_CARRIER_FONT_SIZE,
             STATUS_BAR_CARRIER_FONT_STYLE,
@@ -7692,6 +7706,7 @@ public final class Settings {
             PRIVATE_SETTINGS.add(SYNTHOS_AMBIENT_TEXT_COLOR);
             PRIVATE_SETTINGS.add(SYNTHOS_AMBIENT_TEXT_TYPE_COLOR);
             PRIVATE_SETTINGS.add(VOLUME_DIALOG_TIMEOUT);
+            PRIVATE_SETTINGS.add(SYSTEMUI_PLUGIN_VOLUME);
         }
 
         /**
@@ -7864,6 +7879,7 @@ public final class Settings {
             VALIDATORS.put(STATUS_BAR_LOGO_STYLE, STATUS_BAR_LOGO_STYLE_VALIDATOR);
             VALIDATORS.put(STATUS_BAR_SHOW_CARRIER, STATUS_BAR_SHOW_CARRIER_VALIDATOR);
             VALIDATORS.put(CUSTOM_CARRIER_LABEL, CUSTOM_CARRIER_LABEL_VALIDATOR);
+            VALIDATORS.put(STATUS_BAR_CARRIER_TEXT_TYPE, STATUS_BAR_CARRIER_TEXT_TYPE_VALIDATOR);
             VALIDATORS.put(STATUS_BAR_CARRIER_COLOR, STATUS_BAR_CARRIER_COLOR_VALIDATOR);
             VALIDATORS.put(STATUS_BAR_CARRIER_FONT_SIZE, STATUS_BAR_CARRIER_FONT_SIZE_VALIDATOR);
             VALIDATORS.put(STATUS_BAR_CARRIER_FONT_STYLE, STATUS_BAR_CARRIER_FONT_STYLE_VALIDATOR);

@@ -25,6 +25,9 @@ import android.database.ContentObserver;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.media.MediaMetadata;
+import android.media.session.MediaController;
+import android.media.session.PlaybackState;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.UserHandle;
@@ -41,6 +44,7 @@ import com.android.internal.util.aosip.ThemeConstants;
 import com.android.internal.telephony.TelephonyIntents;
 
 import com.android.systemui.Dependency;
+import com.android.systemui.statusbar.NotificationMediaManager;
 import com.android.systemui.aosip.carrierlabel.SpnOverride;
 import com.android.systemui.plugins.DarkIconDispatcher;
 import com.android.systemui.plugins.DarkIconDispatcher.DarkReceiver;
@@ -51,13 +55,19 @@ import java.util.TimeZone;
 
 import com.android.systemui.R;
 
-public class CarrierLabel extends TextView implements DarkReceiver {
+public class CarrierLabel extends TextView implements NotificationMediaManager.MediaListener, DarkReceiver {
 
     private Context mContext;
     private boolean mAttached;
     private static boolean isCN;
     private int mCarrierColor = 0xffffffff;
     private int mTintColor = Color.WHITE;
+
+    private NotificationMediaManager mMediaManager;
+
+    private CharSequence mMediaTitle;
+    private CharSequence mMediaAlbum;
+    private CharSequence mMediaArtist;
 
     Handler mHandler;
 
@@ -102,6 +112,8 @@ public class CarrierLabel extends TextView implements DarkReceiver {
     public CarrierLabel(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mContext = context;
+        mMediaManager = Dependency.get(NotificationMediaManager.class);
+        mMediaManager.addCallback(this);
         updateNetworkName(true, null, false, null);
         /* Force carrier label to the lockscreen. This helps us avoid
         the carrier label on the statusbar if for whatever reason
@@ -151,6 +163,28 @@ public class CarrierLabel extends TextView implements DarkReceiver {
         }
     }
 
+    /**
+     * Called whenever new media metadata is available.
+     * @param metadata New metadata.
+     */
+    @Override
+    public void onMetadataOrStateChanged(MediaMetadata metadata, @PlaybackState.State int state) {
+
+           CharSequence title = metadata == null ? null : metadata.getText(
+                   MediaMetadata.METADATA_KEY_TITLE);
+           CharSequence album = metadata == null ? null : metadata.getText(
+                   MediaMetadata.METADATA_KEY_ALBUM);
+           CharSequence artist = metadata == null ? null : metadata.getText(
+                   MediaMetadata.METADATA_KEY_ARTIST);
+
+           mMediaTitle = title;
+           mMediaAlbum = album;
+           mMediaArtist = artist;
+           mState = state;
+
+           updateNetworkName(true, null, false, null);
+    }
+
     private final BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -179,10 +213,23 @@ public class CarrierLabel extends TextView implements DarkReceiver {
         }
         String customCarrierLabel = Settings.System.getStringForUser(mContext.getContentResolver(),
                 Settings.System.CUSTOM_CARRIER_LABEL, UserHandle.USER_CURRENT);
-        if (!TextUtils.isEmpty(customCarrierLabel)) {
-            setText(customCarrierLabel);
-        } else {
-            setText(TextUtils.isEmpty(str) ? getOperatorName() : str);
+        int typeCarrierLabel = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.STATUS_BAR_CARRIER_TEXT_TYPE, 0);
+        boolean setDefaultCustom =  typeCarrierLabel == 0 ||
+                                    (TextUtils.isEmpty(mMediaTitle) || TextUtils.isEmpty(mMediaAlbum) || TextUtils.isEmpty(mMediaArtist)) ||
+                                    mState != PlaybackState.STATE_PLAYING;
+        if (setDefaultCustom) {
+            if (!TextUtils.isEmpty(customCarrierLabel)) {
+                setText(customCarrierLabel);
+            } else {
+                setText(TextUtils.isEmpty(str) ? getOperatorName() : str);
+            }
+        } else if (typeCarrierLabel == 1) {
+            setText(mMediaTitle);
+        } else if (typeCarrierLabel == 2) {
+            setText(mMediaAlbum);
+        } else if (typeCarrierLabel == 3) {
+            setText(mMediaArtist);
         }
     }
 
