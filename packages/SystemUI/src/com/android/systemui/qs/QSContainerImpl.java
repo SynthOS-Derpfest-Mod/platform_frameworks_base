@@ -225,6 +225,9 @@ public class QSContainerImpl extends FrameLayout implements
             resolver.registerContentObserver(Settings.System
                     .getUriFor(Settings.System.QS_PANEL_CUSTOM_IMAGE_BLUR), false,
                     this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.SYNTHUI_QS_HEADER_LARGE), false,
+                    this, UserHandle.USER_ALL);
         }
 
         @Override
@@ -401,7 +404,7 @@ public class QSContainerImpl extends FrameLayout implements
                 R.dimen.qs_panel_image_side_margin) : 4;
 
         int statusBarTopMargin = mContext.getResources().getDimensionPixelSize(
-                R.dimen.qs_header_image_top_margin);
+                R.dimen.qs_header_image_secondary_top_margin);
 
         int statusBarBottomMargin = mContext.getResources().getDimensionPixelSize(
                 R.dimen.qs_header_image_bottom_margin);
@@ -409,11 +412,14 @@ public class QSContainerImpl extends FrameLayout implements
         int gradientTopMargin = !mHeaderImageEnabled ? mContext.getResources().getDimensionPixelSize(
                 R.dimen.qs_header_image_offset) : 0;
 
+        int headerImageHeight = mContext.getResources().getDimensionPixelSize(
+                R.dimen.qs_panel_header_image_offset);
+
         ((LayoutParams) mQSPanel.getLayoutParams()).topMargin = topMargin;
         mQSPanel.setLayoutParams(mQSPanel.getLayoutParams());
 
         ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mStatusBarBackground.getLayoutParams();
-        //lp.height = topMargin;
+        lp.height = headerImageHeight;
         lp.setMargins(statusBarSideMargin, statusBarTopMargin, statusBarSideMargin, statusBarBottomMargin);
         mStatusBarBackground.setLayoutParams(lp);
 

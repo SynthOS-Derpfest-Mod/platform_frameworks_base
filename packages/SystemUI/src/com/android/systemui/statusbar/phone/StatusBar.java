@@ -859,6 +859,9 @@ public class StatusBar extends SystemUI implements DemoMode,
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.LOCKSCREEN_MAX_NOTIF_CONFIG),
                     false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.SYNTHUI_QS_HEADER_LARGE),
+                    false, this, UserHandle.USER_ALL);
         }
 
         @Override
@@ -945,6 +948,8 @@ public class StatusBar extends SystemUI implements DemoMode,
                     updateBrightnessSliderOverlay();
             } else if (uri.equals(Settings.System.getUriFor(Settings.System.LOCKSCREEN_MAX_NOTIF_CONFIG))) {
                 setMaxKeyguardNotifConfig();
+            } else if (uri.equals(Settings.System.getUriFor(Settings.System.SYNTHUI_QS_HEADER_LARGE))) {
+                    updateQSHeaderSizeOverlay();
             }
         }
 
@@ -969,6 +974,7 @@ public class StatusBar extends SystemUI implements DemoMode,
             setMediaHeadsup();
             updateQSHeaderStyle();
             setMaxKeyguardNotifConfig();
+            updateQSHeaderSizeOverlay();
         }
     }
 
@@ -2484,6 +2490,17 @@ public class StatusBar extends SystemUI implements DemoMode,
                 }
             });
         }
+    }
+
+    public void updateQSHeaderSizeOverlay() {
+        boolean qsHeaderLarge = Settings.System.getIntForUser(mContext.getContentResolver(),
+                    Settings.System.SYNTHUI_QS_HEADER_LARGE, 0, UserHandle.USER_CURRENT) == 1;
+            try {
+                mOverlayManager.setEnabled("com.synthos.systemui.overlay.qsheadersmall",
+                            qsHeaderLarge, mLockscreenUserManager.getCurrentUserId());
+            } catch (RemoteException e) {
+                Log.w(TAG, "Failed to set header size small", e);
+            }
     }
 
     private void setCutoutOverlay(boolean enable) {

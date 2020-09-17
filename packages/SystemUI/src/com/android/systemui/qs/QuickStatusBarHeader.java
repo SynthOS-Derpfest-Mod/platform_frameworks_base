@@ -502,7 +502,7 @@ public class QuickStatusBarHeader extends RelativeLayout implements
                 (mCustomHeaderImage != null || mCustomHeaderFile != null);
 
         int topMargin = resources.getDimensionPixelSize(
-                R.dimen.qs_panel_secundary_top_margin) + (mHeaderImageEnabled ?
+                R.dimen.qs_panel_secondary_top_margin) + (mHeaderImageEnabled ?
                 resources.getDimensionPixelSize(R.dimen.qs_header_image_offset) : 0);
 
         mSystemIconsView.getLayoutParams().height = topMargin;
@@ -513,7 +513,7 @@ public class QuickStatusBarHeader extends RelativeLayout implements
             lp.height = topMargin;
         } else {
             int qsHeight = resources.getDimensionPixelSize(
-                    R.dimen.qs_panel_secundary_top_margin);
+                    R.dimen.qs_panel_secondary_top_margin);
 
             if (headerImageSelected) {
                 qsHeight += resources.getDimensionPixelSize(R.dimen.qs_header_image_offset);

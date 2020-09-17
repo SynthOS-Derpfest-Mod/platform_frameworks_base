@@ -6956,6 +6956,8 @@ public final class Settings {
 
         public static final String SYNTHUI_WEATHER = "synthui_weather";
 
+        public static final String SYNTHUI_QS_HEADER_LARGE = "synthui_qs_header_large";
+
         public static final String QS_PANEL_TYPE_BACKGROUND = "qs_panel_type_background";
 
         private static final Validator QS_PANEL_TYPE_BACKGROUND_VALIDATOR =
