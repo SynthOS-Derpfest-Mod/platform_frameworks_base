@@ -6977,6 +6977,20 @@ public final class Settings {
         public static final String SYNTHOS_VISUALIZER_QSPANEL = "synthos_visualizer_qspanel";
 
         /**
+        * New Notification Panel Buttons
+        * Synth UI
+        * @hide
+        */
+        public static final String NOTIFICATION_PANEL_BUTTONS = "notification_panel_buttons";
+
+        /**
+        * Hide Manage Notification Footer Button
+        * Synth UI
+        * @hide
+        */
+        public static final String HIDE_MANAGE_BUTTON = "hide_manage_button";
+
+        /**
         * VolumePanel Themes
         * by.tikkiX2
         * @hide

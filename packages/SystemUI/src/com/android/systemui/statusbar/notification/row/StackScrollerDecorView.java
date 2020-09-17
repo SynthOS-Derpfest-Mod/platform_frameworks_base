@@ -164,7 +164,7 @@ public abstract class StackScrollerDecorView extends ExpandableView {
      * @param animate Should this be done in an animated way.
      * @param endRunnable A runnable that is run when the animation is done.
      */
-    private void setViewVisible(View view, boolean nowVisible,
+    public void setViewVisible(View view, boolean nowVisible,
             boolean animate, Runnable endRunnable) {
         if (view == null) {
             return;

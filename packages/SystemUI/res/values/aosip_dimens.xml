@@ -42,6 +42,9 @@
     <dimen name="qs_panel_image_bottom_margin">8dp</dimen>
     <dimen name="qs_expanded_status_icons_bottom_margin">14dp</dimen>
 
+    <!-- The margin at the bottom of the buttons notification footer. -->
+    <dimen name="notification_button_margin_bottom">8dp</dimen>
+
     <!-- Network traffic monitor -->
     <dimen name="net_traffic_multi_text_size">8dp</dimen>
     <dimen name="net_traffic_txt_img_padding">4dp</dimen>

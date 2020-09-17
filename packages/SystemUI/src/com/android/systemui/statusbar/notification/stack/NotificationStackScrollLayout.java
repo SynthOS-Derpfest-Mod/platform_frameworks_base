@@ -707,7 +707,7 @@ public class NotificationStackScrollLayout extends ViewGroup implements ScrollAd
                 && mStatusBarState != StatusBarState.KEYGUARD
                 && !mRemoteInputManager.getController().isRemoteInputActive();
 
-        updateFooterView(showFooterView, showDismissView && !isDismissAllButtonEnabled());
+        updateFooterView(showFooterView, showDismissView && (!isDismissAllButtonEnabled() && !isSynthButtonsEnabled()), isSynthButtonsEnabled() && showDismissView, isManageButtonEnabled(), isSynthButtonsEnabled() && !isDismissAllButtonEnabled());
 
         StatusBar.setHasClearableNotifications(hasActiveClearableNotifications(ROWS_ALL));
 
@@ -721,7 +721,17 @@ public class NotificationStackScrollLayout extends ViewGroup implements ScrollAd
 
     private boolean isDismissAllButtonEnabled() {
         return Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.DISMISS_ALL_BUTTON, 1) != 0;
+                Settings.System.DISMISS_ALL_BUTTON, 0) != 0;
+    }
+
+    private boolean isManageButtonEnabled() {
+        return Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.HIDE_MANAGE_BUTTON, 1) == 0;
+    }
+
+    private boolean isSynthButtonsEnabled() {
+        return Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.NOTIFICATION_PANEL_BUTTONS, 1) != 0;
     }
 
     private static boolean isDismissAllButtonAnimationsEnabled() {
@@ -4944,13 +4954,17 @@ public class NotificationStackScrollLayout extends ViewGroup implements ScrollAd
     }
 
     @ShadeViewRefactor(RefactorComponent.SHADE_VIEW)
-    public void updateFooterView(boolean visible, boolean showDismissView) {
+    public void updateFooterView(boolean visible, boolean showDismissView, boolean showDismissSynthView, boolean showManageView, boolean showSynthViews) {
         if (mFooterView == null) {
             return;
         }
         boolean animate = mIsExpanded && mAnimationsEnabled;
         mFooterView.setVisible(visible, animate);
         mFooterView.setSecondaryVisible(showDismissView, animate);
+        mFooterView.setButtonsSynthVisible(showSynthViews, animate);
+        mFooterView.setDismissSynthVisible(showDismissSynthView, animate);
+        mFooterView.setManageSynthVisible(showSynthViews && showManageView, animate);
+        mFooterView.setManageVisible(!showSynthViews && showManageView, animate);
     }
 
     @ShadeViewRefactor(RefactorComponent.SHADE_VIEW)

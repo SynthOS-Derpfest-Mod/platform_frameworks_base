@@ -21,14 +21,26 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.TextView;
 
 import com.android.systemui.R;
+import com.android.systemui.statusbar.AlphaOptimizedFrameLayout;
 import com.android.systemui.statusbar.notification.stack.ExpandableViewState;
+import com.android.systemui.statusbar.notification.stack.SectionHeaderView;
 
 public class FooterView extends StackScrollerDecorView {
     private final int mClearAllTopPadding;
     private FooterViewButton mDismissButton;
     private FooterViewButton mManageButton;
+    private FooterViewButton mDismissSynthButton;
+    private FooterViewButton mManageSynthButton;
+    private AlphaOptimizedFrameLayout mSectionSynthHeader;
+    private TextView mLabel;
+    private AlphaOptimizedFrameLayout mContentSynthButtons;
+    private boolean mIsManageVisible = true;
+    private boolean mIsManageSynthVisible = true;
+    private boolean mIsDismissSynthVisible = true;
+    private boolean mIsButtonsSynthVisible = true;
 
     public FooterView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -50,19 +62,73 @@ public class FooterView extends StackScrollerDecorView {
         super.onFinishInflate();
         mDismissButton = (FooterViewButton) findSecondaryView();
         mManageButton = findViewById(R.id.manage_text);
+        mContentSynthButtons = findViewById(R.id.content_synth_buttons);
+        mDismissSynthButton = findViewById(R.id.dismiss_synth_text);
+        mManageSynthButton = findViewById(R.id.manage_synth_text);
+        mSectionSynthHeader = findViewById(R.id.section_synth_header);
+        mLabel = findViewById(R.id.header_label);
     }
 
     public void setTextColor(@ColorInt int color) {
         mManageButton.setTextColor(color);
         mDismissButton.setTextColor(color);
+        mManageSynthButton.setTextColor(color);
+        mDismissSynthButton.setTextColor(color);
     }
 
     public void setManageButtonClickListener(OnClickListener listener) {
         mManageButton.setOnClickListener(listener);
+        mManageSynthButton.setOnClickListener(listener);
     }
 
     public void setDismissButtonClickListener(OnClickListener listener) {
         mDismissButton.setOnClickListener(listener);
+        mDismissSynthButton.setOnClickListener(listener);
+    }
+
+    public void setButtonsSynthVisible(boolean nowVisible, boolean animate) {
+        if (mIsButtonsSynthVisible != nowVisible) {
+            this.setViewVisible(mSectionSynthHeader, nowVisible, animate, null /* endRunnable */);
+            this.setViewVisible(mContentSynthButtons, nowVisible, animate, null /* endRunnable */);
+            mContentSynthButtons.setVisibility(nowVisible ? View.VISIBLE : View.GONE);
+            mLabel.setText(mContext.getString(R.string.notification_section_header_buttons));
+            mIsButtonsSynthVisible = nowVisible;
+            updateHeaderVisibility();
+        }
+    }
+
+    public void setDismissSynthVisible(boolean nowVisible, boolean animate) {
+        if (mIsDismissSynthVisible != nowVisible) {
+            this.setViewVisible(mDismissSynthButton, nowVisible, animate, null /* endRunnable */);
+            mIsDismissSynthVisible = nowVisible;
+            updateHeaderVisibility();
+        }
+    }
+
+    public void setManageVisible(boolean nowVisible, boolean animate) {
+        if (mIsManageVisible != nowVisible) {
+            this.setViewVisible(mManageButton, (nowVisible && !mIsButtonsSynthVisible), animate, null /* endRunnable */);
+            mIsManageVisible = nowVisible;
+        }
+    }
+
+    public void setManageSynthVisible(boolean nowVisible, boolean animate) {
+        if (mIsManageSynthVisible != nowVisible) {
+            this.setViewVisible(mManageSynthButton, (nowVisible && mIsButtonsSynthVisible), animate, null /* endRunnable */);
+            mManageSynthButton.setVisibility(nowVisible ? View.VISIBLE : View.GONE);
+            mIsManageSynthVisible = nowVisible;
+            updateHeaderVisibility();
+        }
+    }
+
+    public void updateHeaderVisibility() {
+        boolean nowVisible;
+        if (mIsManageSynthVisible || mIsDismissSynthVisible) {
+            nowVisible = true;
+        } else {
+            nowVisible = false;
+        }
+        this.setViewVisible(mSectionSynthHeader, nowVisible, true, null /* endRunnable */);
     }
 
     public boolean isOnEmptySpace(float touchX, float touchY) {
@@ -81,6 +147,14 @@ public class FooterView extends StackScrollerDecorView {
         mManageButton.setText(R.string.manage_notifications_text);
         mManageButton.setContentDescription(
                 mContext.getString(R.string.accessibility_manage_notification));
+        mDismissSynthButton.setText(R.string.clear_all_notifications_text);
+        mDismissSynthButton.setContentDescription(
+                mContext.getString(R.string.accessibility_clear_all));
+        mManageSynthButton.setText(R.string.manage_notifications_text);
+        mManageSynthButton.setContentDescription(
+                mContext.getString(R.string.accessibility_manage_notification));
+        mLabel.setText(
+                mContext.getString(R.string.notification_section_header_buttons));
     }
 
     public boolean isButtonVisible() {
