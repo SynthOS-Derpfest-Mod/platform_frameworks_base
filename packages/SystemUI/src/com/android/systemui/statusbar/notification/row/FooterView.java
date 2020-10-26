@@ -17,9 +17,15 @@
 package com.android.systemui.statusbar.notification.row;
 
 import android.annotation.ColorInt;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.database.ContentObserver;
+import android.net.Uri;
+import android.os.UserHandle;
+import android.provider.Settings;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
 
@@ -69,6 +75,16 @@ public class FooterView extends StackScrollerDecorView {
         mLabel = findViewById(R.id.header_label);
     }
 
+    private boolean getShowHeaders() {
+        return Settings.System.getIntForUser(getContext().getContentResolver(),
+                Settings.System.NOTIFICATION_HEADERS, 0, UserHandle.USER_CURRENT) == 1;
+    }
+
+    private boolean getCenterHeaders() {
+        return Settings.System.getIntForUser(getContext().getContentResolver(),
+                Settings.System.SYNTHOS_CENTER_NOTIFICATION_HEADERS, 1, UserHandle.USER_CURRENT) == 1;
+    }
+
     public void setTextColor(@ColorInt int color) {
         mManageButton.setTextColor(color);
         mDismissButton.setTextColor(color);
@@ -88,7 +104,7 @@ public class FooterView extends StackScrollerDecorView {
 
     public void setButtonsSynthVisible(boolean nowVisible, boolean animate) {
         if (mIsButtonsSynthVisible != nowVisible) {
-            this.setViewVisible(mSectionSynthHeader, nowVisible, animate, null /* endRunnable */);
+            this.setViewVisible(mSectionSynthHeader, nowVisible && getShowHeaders(), animate, null /* endRunnable */);
             this.setViewVisible(mContentSynthButtons, nowVisible, animate, null /* endRunnable */);
             mContentSynthButtons.setVisibility(nowVisible ? View.VISIBLE : View.GONE);
             mLabel.setText(mContext.getString(R.string.notification_section_header_buttons));
@@ -128,7 +144,13 @@ public class FooterView extends StackScrollerDecorView {
         } else {
             nowVisible = false;
         }
-        this.setViewVisible(mSectionSynthHeader, nowVisible, true, null /* endRunnable */);
+        if (getCenterHeaders()) {
+            mLabel.setGravity(Gravity.CENTER);
+        } else {
+            mLabel.setGravity(Gravity.START);
+        }
+        this.setViewVisible(mSectionSynthHeader, nowVisible && getShowHeaders(), true, null /* endRunnable */);
+        mSectionSynthHeader.setVisibility(nowVisible && getShowHeaders() ? View.VISIBLE : View.GONE);
     }
 
     public boolean isOnEmptySpace(float touchX, float touchY) {
