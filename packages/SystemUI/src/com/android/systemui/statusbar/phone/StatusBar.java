@@ -4923,10 +4923,13 @@ public class StatusBar extends SystemUI implements DemoMode,
                 userId = entry.notification.getUserId();
             }
         }
-        boolean fullShadeNeedsBouncer = !mLockscreenUserManager.
+
+        boolean showSynthSmartMedia = Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.SYNTH_SMART_MEDIA, 1, UserHandle.USER_CURRENT) == 1;
+        boolean fullShadeNeedsBouncer = (!mLockscreenUserManager.
                 userAllowsPrivateNotificationsInPublic(mLockscreenUserManager.getCurrentUserId())
                 || !mLockscreenUserManager.shouldShowLockscreenNotifications()
-                || mFalsingManager.shouldEnforceBouncer();
+                || mFalsingManager.shouldEnforceBouncer() && !showSynthSmartMedia);
         if (mKeyguardBypassController.getBypassEnabled()) {
             fullShadeNeedsBouncer = false;
         }

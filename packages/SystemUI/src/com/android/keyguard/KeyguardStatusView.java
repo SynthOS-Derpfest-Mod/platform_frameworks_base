@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.media.session.PlaybackState;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.RemoteException;
@@ -53,7 +54,9 @@ import com.android.keyguard.clock.CustomTextClock;
 import com.android.systemui.Dependency;
 import com.android.systemui.omni.CurrentWeatherView;
 import com.android.systemui.R;
+import com.android.systemui.statusbar.NotificationMediaManager;
 import com.android.systemui.statusbar.policy.ConfigurationController;
+import com.android.systemui.synth.gamma.SynthMusic;
 
 import java.lang.Math;
 import java.io.FileDescriptor;
@@ -66,12 +69,17 @@ public class KeyguardStatusView extends GridLayout implements
     private static final boolean DEBUG = KeyguardConstants.DEBUG;
     private static final String TAG = "KeyguardStatusView";
     private static final int MARQUEE_DELAY_MS = 2000;
+    private static final int SMART_MEDIA_ANIMATION_DURATION = 300;
 
     private final LockPatternUtils mLockPatternUtils;
     private final IActivityManager mIActivityManager;
 
+    private Context mContext;
+
     private LinearLayout mStatusViewContainer;
     private TextView mLogoutView;
+    private SynthMusic mSmartMedia;
+    private FrameLayout mSmartMediaContainer;
     private KeyguardClockSwitch mClockView;
     private CustomTextClock mTextClock;
     private TextView mOwnerInfo;
@@ -112,6 +120,9 @@ public class KeyguardStatusView extends GridLayout implements
 
     //Align Clock, date and weather to left -- yeah, like oneUI
     private boolean mAlignLeft;
+
+    private boolean mSmartMediaVisibility = false;
+    private boolean mSmartMediaOnAnimation = false;
 
     private KeyguardUpdateMonitorCallback mInfoCallback = new KeyguardUpdateMonitorCallback() {
 
@@ -189,6 +200,7 @@ public class KeyguardStatusView extends GridLayout implements
 
     public KeyguardStatusView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        mContext = context;
         mIActivityManager = ActivityManager.getService();
         mLockPatternUtils = new LockPatternUtils(getContext());
         mHandler = new Handler(Looper.myLooper());
@@ -249,6 +261,8 @@ public class KeyguardStatusView extends GridLayout implements
 
         mClockView = findViewById(R.id.keyguard_clock_container);
         mClockView.setShowCurrentUserTime(true);
+        mSmartMedia = findViewById(R.id.synth_smart_media);
+        mSmartMediaContainer = findViewById(R.id.smart_media_container);
         mTextClock = findViewById(R.id.custom_text_clock_view);
         mOwnerInfo = findViewById(R.id.owner_info);
         mKeyguardSlice = findViewById(R.id.keyguard_status_area);
@@ -257,7 +271,11 @@ public class KeyguardStatusView extends GridLayout implements
         mCoolDividerThree = findViewById(R.id.cool_divider_three);
 
         mWeatherView = (CurrentWeatherView) findViewById(R.id.weather_container);
+
+        setOnClickListener(this::onKeyguardClick);
+        setClickable(true);
         updateSettings();
+        setSmartMediaInvisible();
 
         mKeyguardSliceView = findViewById(R.id.keyguard_status_area);
         mClockView.refreshLockFont();
@@ -761,6 +779,104 @@ public class KeyguardStatusView extends GridLayout implements
         mOwnerInfo.setTypeface(Typeface.create(fontsArray[ownerinfoFont][0], fontType));
     }
 
+    private void onKeyguardClick(View view) {
+        updateSmartMediaVisibility();
+    }
+
+    private void setSmartMedia() {
+        ViewGroup.LayoutParams lp = (ViewGroup.LayoutParams) mSmartMedia.getLayoutParams();
+        if (mClockSelection != 10 && mClockSelection != 11) {
+            lp.height = mSmallClockView.getHeight();
+        } else {
+            lp.height = mTextClock.getHeight();
+        }
+        mSmartMedia.initDependencies(Dependency.get(NotificationMediaManager.class), mContext);
+        mSmartMedia.setState(true);
+        mSmartMedia.setLayoutParams(lp);
+        mSmartMedia.setPadding(0,20,0,20);
+    }
+
+    private void updateSmartMediaVisibility() {
+        boolean showSynthSmartMedia = Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.SYNTH_SMART_MEDIA, 1, UserHandle.USER_CURRENT) == 1;
+
+        boolean isPlaying = Dependency.get(NotificationMediaManager.class).getPlaybackStateIsEqual(PlaybackState.STATE_PLAYING) ||
+                                Dependency.get(NotificationMediaManager.class).getPlaybackStateIsEqual(PlaybackState.STATE_PAUSED);
+
+        if (!mSmartMediaOnAnimation) {
+            if ((showSynthSmartMedia && !mSmartMediaVisibility) && isPlaying) {
+                setSmartMediaVisible();
+            } else if (mSmartMediaVisibility) {
+                setSmartMediaInvisible();
+            } else if (!showSynthSmartMedia && mSmartMediaVisibility) {
+                setSmartMediaInvisible();
+            }
+        }
+    }
+
+    private void setSmartMediaVisible() {
+        mSmartMediaContainer.setAlpha(0);
+        mSmartMediaContainer.setTranslationX(mSmartMediaContainer.getWidth());
+        mSmartMediaContainer.animate()
+                                  .alpha(1)
+                                  .translationX(0)
+                                  .setDuration(SMART_MEDIA_ANIMATION_DURATION)
+                                  .withStartAction(() -> {
+                                      mSmartMediaOnAnimation = true;
+                                  })
+                                  .withEndAction(() -> {
+                                        mSmartMediaVisibility = true;
+                                        mSmartMediaOnAnimation = false;
+                                      })
+                                  .start();
+        mSmallClockView.setAlpha(1);
+        mSmallClockView.setTranslationX(0);
+        mSmallClockView.animate()
+                              .alpha(0)
+                              .translationX(-(mSmallClockView.getWidth()))
+                              .setDuration(SMART_MEDIA_ANIMATION_DURATION)
+                              .start();
+        mTextClock.setAlpha(1);
+        mTextClock.setTranslationX(0);
+        mTextClock.animate()
+                        .alpha(0)
+                        .translationX(-(mTextClock.getWidth()))
+                        .setDuration(SMART_MEDIA_ANIMATION_DURATION)
+                        .start();
+    }
+
+    private void setSmartMediaInvisible() {
+        mSmartMediaContainer.setAlpha(1);
+        mSmartMediaContainer.setTranslationX(0);
+        mSmartMediaContainer.animate()
+                                  .alpha(0)
+                                  .translationX(mSmartMediaContainer.getWidth())
+                                  .setDuration(SMART_MEDIA_ANIMATION_DURATION)
+                                  .withStartAction(() -> {
+                                      mSmartMediaOnAnimation = true;
+                                  })
+                                  .withEndAction(() -> {
+                                      mSmartMediaVisibility = false;
+                                      mSmartMediaOnAnimation = false;
+                                      })
+                                  .start();
+        mSmallClockView.setAlpha(0);
+        mSmallClockView.setTranslationX(-(mSmallClockView.getWidth()));
+        mSmallClockView.animate()
+                              .alpha(1)
+                              .translationX(0)
+                              .setDuration(SMART_MEDIA_ANIMATION_DURATION)
+                              .start();
+        mTextClock.setAlpha(0);
+        mTextClock.setTranslationX(-(mTextClock.getWidth()));
+        mTextClock.animate()
+                        .alpha(1)
+                        .translationX(0)
+                        .setDuration(SMART_MEDIA_ANIMATION_DURATION)
+                        .start();
+
+    }
+
     private void updateSettings() {
         final ContentResolver resolver = getContext().getContentResolver();
 
@@ -782,6 +898,7 @@ public class KeyguardStatusView extends GridLayout implements
         final Resources res = getContext().getResources();
 
         mClockView = findViewById(R.id.keyguard_clock_container);
+        mSmartMediaContainer = findViewById(R.id.smart_media_container);
         mDefaultClockView = findViewById(R.id.default_clock_view);
         mClockView.setVisibility(mDarkAmount != 1
                 ? (mShowClock ? View.VISIBLE : View.GONE) : View.VISIBLE);
@@ -981,6 +1098,14 @@ public class KeyguardStatusView extends GridLayout implements
             }
         updateDateStyles();
         updateClockAlignment();
+        setSmartMedia();
+
+        boolean isPlaying = Dependency.get(NotificationMediaManager.class).getPlaybackStateIsEqual(PlaybackState.STATE_PLAYING) ||
+                              Dependency.get(NotificationMediaManager.class).getPlaybackStateIsEqual(PlaybackState.STATE_PAUSED);
+
+        if (!mSmartMediaOnAnimation) {
+            if (mSmartMediaVisibility && !isPlaying) setSmartMediaInvisible();
+        }
     }
 
     public void updateAll() {
@@ -1000,6 +1125,7 @@ public class KeyguardStatusView extends GridLayout implements
         RelativeLayout.LayoutParams coolDividerThreeParams = (RelativeLayout.LayoutParams) mCoolDividerThree.getLayoutParams();
         RelativeLayout.LayoutParams weatherViewParams = (RelativeLayout.LayoutParams) mWeatherView.getLayoutParams();
         RelativeLayout.LayoutParams smallClockViewParams = (RelativeLayout.LayoutParams) mSmallClockView.getLayoutParams();
+        RelativeLayout.LayoutParams smartMediaContainerParams = (RelativeLayout.LayoutParams) mSmartMediaContainer.getLayoutParams();
 
         final Resources res = getContext().getResources();
 
@@ -1084,17 +1210,19 @@ public class KeyguardStatusView extends GridLayout implements
                 mKeyguardSlice.setGravity(Gravity.START);
                 mKeyguardSlice.setPaddingRelative(updateLeftMargin(), 0, 0, 0);
                 updateGravity(coolDividerOneParams,Gravity.START);
-                coolDividerOneParams.setMargins(updateLeftMargin(), margin, 0, margin);
+                coolDividerOneParams.setMargins(updateLeftMargin() + 12,margin,12,margin);
                 coolDividerTwoParams.gravity = (Gravity.START);
-                coolDividerTwoParams.setMargins(updateLeftMargin(),margin,0,margin);
+                coolDividerTwoParams.setMargins(updateLeftMargin() + 12,margin,12,margin);
                 updateGravity(coolDividerThreeParams,Gravity.START);
-                coolDividerThreeParams.setMargins(updateLeftMargin(),margin,0,margin);
+                coolDividerThreeParams.setMargins(updateLeftMargin() + 12,margin,12,margin);
                 updateGravity(weatherViewParams,Gravity.START);
                 weatherViewParams.setMargins(updateLeftMargin(),margin,0,margin);
                 mOwnerInfo.setGravity(Gravity.START);
                 mOwnerInfo.setPaddingRelative(updateLeftMargin(), 0, 0, 0);
                 updateGravity(smallClockViewParams,Gravity.START);
                 smallClockViewParams.setMargins(updateLeftMargin(),margin,0,margin);
+                updateGravity(smartMediaContainerParams,Gravity.START);
+                smartMediaContainerParams.setMargins(updateLeftMargin(),margin,0,margin);
                 mClockView.setGravity(Gravity.TOP|Gravity.START);
             } else {
                 mKeyguardSlice.setGravity(Gravity.CENTER_HORIZONTAL);
@@ -1111,6 +1239,8 @@ public class KeyguardStatusView extends GridLayout implements
                 mOwnerInfo.setPaddingRelative(0, 0, 0, 0);
                 updateGravity(smallClockViewParams,Gravity.CENTER_HORIZONTAL);
                 smallClockViewParams.setMargins(0,margin,0,margin);
+                updateGravity(smartMediaContainerParams,Gravity.CENTER_HORIZONTAL);
+                smartMediaContainerParams.setMargins(24,margin,24,margin);
                 mClockView.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL);
             }
         }
@@ -1120,6 +1250,7 @@ public class KeyguardStatusView extends GridLayout implements
         mCoolDividerThree.setLayoutParams(coolDividerThreeParams);
         mWeatherView.setLayoutParams(weatherViewParams);
         mSmallClockView.setLayoutParams(smallClockViewParams);
+        mSmartMediaContainer.setLayoutParams(smartMediaContainerParams);
 
     }
 

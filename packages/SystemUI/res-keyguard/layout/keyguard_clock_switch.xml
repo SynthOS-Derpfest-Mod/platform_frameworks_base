@@ -99,4 +99,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/cool_divider" />
+
+    <FrameLayout
+         android:id="@+id/smart_media_container"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignParentTop="true">
+
+         <!-- Synth Smart Media. -->
+         <include layout="@layout/synth_smart_media" />
+
+    </FrameLayout>
+
 </com.android.keyguard.KeyguardClockSwitch>
