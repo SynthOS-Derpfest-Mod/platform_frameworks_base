@@ -52,7 +52,9 @@ import android.util.Pair;
 import android.view.ContextThemeWrapper;
 import android.view.DisplayCutout;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -158,6 +160,7 @@ public class QuickStatusBarHeader extends RelativeLayout implements
     private TextClock mSynthDateExpandedView;
     private View mStatusIconsContainer;
     private View mStatusIconsExpanded;
+    private ViewGroup mSynthClockContainer;
     private View mStatusInfoContainer;
     private CurrentWeatherView mWeatherView;
     private BatteryMeterView mBatteryMeterView;
@@ -229,6 +232,9 @@ public class QuickStatusBarHeader extends RelativeLayout implements
                     this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System
                     .getUriFor(Settings.System.SYNTHUI_STATUSINFO_QSEXPANDED), false,
+                    this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.SYNTHUI_QSEXPANDED_CLOCK_STYLE), false,
                     this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System
                     .getUriFor(Settings.System.SYNTHUI_WEATHER), true,
@@ -325,8 +331,7 @@ public class QuickStatusBarHeader extends RelativeLayout implements
         mStatusIconsExpanded = findViewById(R.id.synthStatusIconsExpanded);
         mStatusIconsContainer = findViewById(R.id.synthStatusIconsContainer);
         mStatusInfoContainer = findViewById(R.id.synth_info_container);
-
-        updateResources();
+        mSynthClockContainer = findViewById(R.id.synth_clock_date_container);
 
         @ColorInt int textColor = Utils.getColorAttrDefaultColor(getContext(),
                 R.attr.wallpaperTextColor);
@@ -355,8 +360,9 @@ public class QuickStatusBarHeader extends RelativeLayout implements
         mDataUsageImage = findViewById(R.id.daily_data_usage_icon);
         mDataUsageView = findViewById(R.id.data_sim_usage);
         mWeatherView = findViewById(R.id.qs_weather_container);
-        mSynthClockExpandedView = findViewById(R.id.SynthClockExpanded);
-        mSynthDateExpandedView = findViewById(R.id.SynthDateExpanded);
+
+        updateResources();
+
         mSynthClockStatusView = findViewById(R.id.SynthClock);
 
         mSynthClockExpandedView.setTextColor(textColor);
@@ -409,6 +415,38 @@ public class QuickStatusBarHeader extends RelativeLayout implements
     }
     }
 
+    private void setQsClockExpandedStyle() {
+        int style = Settings.System.getIntForUser(mContext.getContentResolver(),
+                    Settings.System.SYNTHUI_QSEXPANDED_CLOCK_STYLE, 0,
+                    UserHandle.USER_CURRENT);
+
+        int id = 0;
+        LayoutInflater li = LayoutInflater.from(mContext);
+
+        mSynthClockContainer.removeAllViews();
+
+        switch (style) {
+            case 0: // default
+                id = R.layout.synth_clock_expanded_default;
+                break;
+            case 1: // material
+                id = R.layout.synth_clock_expanded_material;
+                break;
+            case 2: // sammy
+                id = R.layout.synth_clock_expanded_sammy;
+                break;
+            case 3: // material sammy
+                id = R.layout.synth_clock_expanded_material_sammy;
+                break;
+        }
+
+        View clockContainer = li.inflate(id, mSynthClockContainer);
+        mSynthClockExpandedView = clockContainer.findViewById(R.id.SynthClockExpanded);
+        mSynthDateExpandedView = clockContainer.findViewById(R.id.SynthDateExpanded);
+        updateSynthText();
+        updateQSClock();
+
+    }
 
     private boolean updateRingerStatus() {
         boolean isOriginalVisible = mRingerModeTextView.getVisibility() == View.VISIBLE;
@@ -526,7 +564,7 @@ public class QuickStatusBarHeader extends RelativeLayout implements
             lp.height -= 36; // save some space if not showing drag handle & settings icon
 
         setLayoutParams(lp);
-
+        setQsClockExpandedStyle();
         updateStatusIconExpandedAlphaAnimator();
         updateStatusIconAlphaAnimator();
         updateHeaderTextContainerAlphaAnimator();
@@ -611,10 +649,15 @@ public class QuickStatusBarHeader extends RelativeLayout implements
         String SYNTHUI_COLOR_TYPE_CLOCK_QSEXPANDED = "synthui_color_type_clock_qsexpanded";
         String SYNTHUI_COLOR_TYPE_DATE_QSEXPANDED = "synthui_color_type_date_qsexpanded";
 
-        mGamma.setTextFontFromVarible(mSynthClockExpandedView, SYNTHUI_FONT_CLOCK_QSEXPANDED);
-        mGamma.setTextFontFromVarible(mSynthDateExpandedView, SYNTHUI_FONT_DATE_QSEXPANDED);
-        mGamma.setTextColorTypeFromVariable(mSynthClockExpandedView, SYNTHUI_COLOR_TYPE_CLOCK_QSEXPANDED, null);
-        mGamma.setTextColorTypeFromVariable(mSynthDateExpandedView, SYNTHUI_COLOR_TYPE_DATE_QSEXPANDED, null);
+        if (mSynthClockExpandedView != null) {
+            mGamma.setTextFontFromVarible(mSynthClockExpandedView, SYNTHUI_FONT_CLOCK_QSEXPANDED);
+            mGamma.setTextColorTypeFromVariable(mSynthClockExpandedView, SYNTHUI_COLOR_TYPE_CLOCK_QSEXPANDED, null);
+        }
+
+        if (mSynthDateExpandedView != null) {
+            mGamma.setTextFontFromVarible(mSynthDateExpandedView, SYNTHUI_FONT_DATE_QSEXPANDED);
+            mGamma.setTextColorTypeFromVariable(mSynthDateExpandedView, SYNTHUI_COLOR_TYPE_DATE_QSEXPANDED, null);
+        }
 
     }
 
@@ -909,6 +952,7 @@ public class QuickStatusBarHeader extends RelativeLayout implements
                 Settings.System.QS_HIDE_BATTERY, 0,
                 UserHandle.USER_CURRENT) == 1;
         updateQSBatteryMode();
+        setQsClockExpandedStyle();
         updateSBBatteryStyle();
         updateQSClock();
         updateResources();
