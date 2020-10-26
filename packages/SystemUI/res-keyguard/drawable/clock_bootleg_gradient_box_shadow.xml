@@ -1,0 +1,13 @@
+<shape
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle"
+    android:width="175dip"
+    android:height="105dip">
+    <gradient
+        android:type="linear"
+        android:startColor="@color/clock_gradient_general_gradient_start"
+        android:endColor="@color/clock_gradient_general_gradient_end"
+        android:angle="45" />
+    <corners
+        android:radius="10dp" />
+</shape>
