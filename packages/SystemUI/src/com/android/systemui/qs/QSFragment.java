@@ -254,7 +254,7 @@ public class QSFragment extends LifecycleFragment implements QS, CommandQueue.Ca
                 }
             }
         });
-    } 
+    }
 
     @Override
     public void onDestroy() {
@@ -410,6 +410,10 @@ public class QSFragment extends LifecycleFragment implements QS, CommandQueue.Ca
 
     public QSCustomizer getCustomizer() {
         return mQSCustomizer;
+    }
+
+    public float getLastQSExpansion() {
+        return (float) mLastQSExpansion;
     }
 
     @Override

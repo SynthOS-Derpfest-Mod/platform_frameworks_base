@@ -32,6 +32,13 @@
         android:visibility="gone"
         sysui:ignoreRightInset="true" />
 
+    <ImageView
+        android:id="@+id/qs_extra_blur"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        sysui:ignoreRightInset="true" />
+
     <com.android.systemui.statusbar.BackDropView
             android:id="@+id/backdrop"
             android:layout_width="match_parent"

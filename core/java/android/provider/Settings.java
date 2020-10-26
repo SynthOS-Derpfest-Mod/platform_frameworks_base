@@ -6268,6 +6268,14 @@ public final class Settings {
         private static final Validator QS_BLUR_VALIDATOR = BOOLEAN_VALIDATOR;
 
         /**
+         * QS blur
+         * @hide
+         */
+        public static final String QS_EXTRA_BLUR = "qs_extra_blur";
+        /** @hide */
+        private static final Validator QS_EXTRA_BLUR_VALIDATOR = BOOLEAN_VALIDATOR;
+
+        /**
          * QS blur alpha
          * @hide
          */
@@ -7405,6 +7413,7 @@ public final class Settings {
             QS_PANEL_BG_USE_FW,
             QS_PANEL_BG_USE_ACCENT,
             QS_BLUR,
+            QS_EXTRA_BLUR,
             QS_BLUR_ALPHA,
             QS_BLUR_INTENSITY,
             STATUS_BAR_SHOW_TICKER,
@@ -7993,6 +8002,7 @@ public final class Settings {
             VALIDATORS.put(QS_PANEL_BG_USE_FW, QS_PANEL_BG_USE_FW_VALIDATOR);
             VALIDATORS.put(QS_PANEL_BG_USE_ACCENT, QS_PANEL_BG_USE_ACCENT_VALIDATOR);
             VALIDATORS.put(QS_BLUR, QS_BLUR_VALIDATOR);
+            VALIDATORS.put(QS_EXTRA_BLUR, QS_EXTRA_BLUR_VALIDATOR);
             VALIDATORS.put(QS_BLUR_ALPHA, QS_BLUR_ALPHA_VALIDATOR);
             VALIDATORS.put(QS_BLUR_INTENSITY, QS_BLUR_INTENSITY_VALIDATOR);
             VALIDATORS.put(STATUS_BAR_SHOW_TICKER, STATUS_BAR_SHOW_TICKER_VALIDATOR);

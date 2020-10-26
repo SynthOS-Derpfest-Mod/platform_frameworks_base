@@ -458,6 +458,7 @@ public class StatusBar extends SystemUI implements DemoMode,
 
     // settings
     private QSPanel mQSPanel;
+    private QSFragment mQSFragment;
     private QuickQSPanel mQuickQSPanel;
 
     KeyguardIndicationController mKeyguardIndicationController;
@@ -558,6 +559,8 @@ public class StatusBar extends SystemUI implements DemoMode,
     }
 
     public ImageView mQSBlurView;
+    public ImageView mQSExtraBlurView;
+    public float mQsExpansion = 0;
     private boolean blurperformed = false;
 
     // ensure quick settings is disabled until the current user makes it through the setup wizard
@@ -807,6 +810,9 @@ public class StatusBar extends SystemUI implements DemoMode,
                     Settings.System.QS_BLUR_INTENSITY),
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.QS_EXTRA_BLUR),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_SHOW_TICKER),
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
@@ -925,6 +931,7 @@ public class StatusBar extends SystemUI implements DemoMode,
                 mQSPanel.getHost().reloadAllTiles();
             } else if (uri.equals(Settings.System.getUriFor(Settings.System.QS_BLUR_ALPHA)) ||
                     uri.equals(Settings.System.getUriFor(Settings.System.QS_BLUR_INTENSITY)) ||
+                    uri.equals(Settings.System.getUriFor(Settings.System.QS_EXTRA_BLUR)) ||
                     uri.equals(Settings.System.getUriFor(Settings.System.QS_PANEL_WALLPAPER_BACKGROUND))) {
                 updateBlurVisibility();
             } else if (uri.equals(Settings.Secure.getUriFor(Settings.Secure.LOCKSCREEN_CLOCK_SELECTION)) ||
@@ -1349,6 +1356,7 @@ public class StatusBar extends SystemUI implements DemoMode,
         mStackScroller = mStatusBarWindow.findViewById(R.id.notification_stack_scroller);
         mZenController.addCallback(this);
         mQSBlurView = mStatusBarWindow.findViewById(R.id.qs_blur);
+        mQSExtraBlurView = mStatusBarWindow.findViewById(R.id.qs_extra_blur);
         NotificationListContainer notifListContainer = (NotificationListContainer) mStackScroller;
         mNotificationLogger.setUpWithContainer(notifListContainer);
 
@@ -1633,6 +1641,10 @@ public class StatusBar extends SystemUI implements DemoMode,
                 Settings.Secure.LOCKSCREEN_VISUALIZER_ENABLED, 0) != 0;
     }
 
+    public void updateQsExpansion(float expansion) {
+        mQsExpansion = expansion;
+    }
+
     public void updateBlurVisibility() {
         int QSUserAlpha = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.QS_BLUR_ALPHA, 100);
@@ -1640,39 +1652,58 @@ public class StatusBar extends SystemUI implements DemoMode,
         float QSBlurPosition = mNotificationPanel.getExpandedFraction() * (float) mQSBlurView.getMeasuredHeight();
         boolean enoughBlurData = (QSBlurAlpha > 0 && qsBlurIntensity() > 0);
 
+        mQSBlurView.setAlpha((isQSWallpaperEnabled() ? 1 : QSBlurAlpha));
+        mQSExtraBlurView.setAlpha(mQsExpansion);
+
         if (isQSWallpaperEnabled()) {
             mQSBlurView.setTop((int) (mQSBlurView.getMeasuredHeight() - QSBlurPosition) - ((int) (mQSBlurView.getMeasuredHeight() - QSBlurPosition) * 2));
+            mQSExtraBlurView.setTop((int) (mQSBlurView.getMeasuredHeight() - QSBlurPosition) - ((int) (mQSBlurView.getMeasuredHeight() - QSBlurPosition) * 2));
         }
         if (enoughBlurData && !blurperformed && !mIsKeyguard && (isQSBlurEnabled() || isQSWallpaperEnabled())) {
             drawBlurView();
             blurperformed = true;
             mQSBlurView.setVisibility(View.VISIBLE);
+            if (isQSExtraBlurEnabled()) {
+                mQSExtraBlurView.setVisibility(View.VISIBLE);
+            } else {
+                mQSExtraBlurView.setVisibility(View.GONE);
+            }
         } else if (!enoughBlurData || mState == StatusBarState.KEYGUARD) {
             blurperformed = false;
             mQSBlurView.setVisibility(View.GONE);
+            mQSExtraBlurView.setVisibility(View.GONE);
         }
-
-        mQSBlurView.setAlpha((isQSWallpaperEnabled() ? 1 : QSBlurAlpha));
     }
 
     private void drawBlurView() {
         Bitmap surfaceBitmap = ImageUtilities.screenshotSurface(mContext);
+        Bitmap surfaceBlurBitmap = ImageUtilities.blurImage(mContext, surfaceBitmap, qsBlurIntensity());
+        Bitmap surfaceExtraBlurBitmap = ImageHelper.getBlurredImage(mContext, surfaceBlurBitmap, 25f);
         WallpaperManager wallpaperManager = WallpaperManager.getInstance(mContext);
         WallpaperInfo info = wallpaperManager.getWallpaperInfo(UserHandle.USER_CURRENT);
         Bitmap wallpaper = info == null ? ImageHelper.drawableToBitmap(wallpaperManager.getDrawable()) : null;
         Bitmap wallpaperBlur = info == null ? ImageHelper.getBlurredImage(mContext, wallpaper, ((float) qsBlurIntensity()) * 0.25f) : null;
+        Bitmap wallpaperExtraBlur = info == null ? ImageHelper.getBlurredImage(mContext, wallpaperBlur, 25f) : null;
         if (info == null && isQSWallpaperEnabled()) {
             mQSBlurView.setImageBitmap(isQSBlurEnabled() ? wallpaperBlur : wallpaper);
+            mQSExtraBlurView.setImageBitmap(wallpaperExtraBlur);
         } else if (surfaceBitmap == null && !isQSWallpaperEnabled()) {
             mQSBlurView.setImageDrawable(null);
+            mQSExtraBlurView.setImageDrawable(null);
         } else if (!isQSWallpaperEnabled()) {
-            mQSBlurView.setImageBitmap(ImageUtilities.blurImage(mContext, surfaceBitmap, qsBlurIntensity()));
+            mQSBlurView.setImageBitmap(surfaceBlurBitmap);
+            mQSExtraBlurView.setImageBitmap(surfaceExtraBlurBitmap);
         }
     }
 
     private boolean isQSBlurEnabled() {
         return Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.QS_BLUR, 0) != 0;
+    }
+
+    private boolean isQSExtraBlurEnabled() {
+        return Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.QS_EXTRA_BLUR, 1) != 0;
     }
 
     private boolean isQSWallpaperEnabled() {
@@ -1818,7 +1849,8 @@ public class StatusBar extends SystemUI implements DemoMode,
     }
 
     protected QS createDefaultQSFragment() {
-        return FragmentHostManager.get(mStatusBarWindow).create(QSFragment.class);
+        mQSFragment = FragmentHostManager.get(mStatusBarWindow).create(QSFragment.class);
+        return mQSFragment;
     }
 
     private void setUpPresenter() {
