@@ -2,8 +2,11 @@ package com.android.systemui.statusbar.phone;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.database.ContentObserver;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.os.UserHandle;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -590,12 +593,15 @@ public class NotificationIconAreaController implements DarkReceiver,
     }
 
     private void updateAodIconsVisibility(boolean animate) {
+        boolean showIconsLockScreen = Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.AMBIENT_ICONS_LOCKSCREEN,
+                0, UserHandle.USER_CURRENT) != 0;
         boolean visible = mBypassController.getBypassEnabled()
-                || mWakeUpCoordinator.getNotificationsFullyHidden();
+                || mWakeUpCoordinator.getNotificationsFullyHidden() || showIconsLockScreen;
         if (mStatusBarStateController.getState() != StatusBarState.KEYGUARD) {
             visible = false;
         }
-        if (visible && mWakeUpCoordinator.isPulseExpanding()) {
+        if (visible && mWakeUpCoordinator.isPulseExpanding() && !showIconsLockScreen) {
             visible = false;
         }
         if (mAodIconsVisible != visible) {

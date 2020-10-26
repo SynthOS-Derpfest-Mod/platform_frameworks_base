@@ -6936,6 +6936,12 @@ public final class Settings {
         */
         public static final String SYNTHOS_ONEUI_DATE_FORMAT = "synthos_oneui_date_format";
 
+        /**
+        * Show Ambient Icons in Lockscreen
+        * by.tikkiX2
+        * @hide
+        */
+        public static final String AMBIENT_ICONS_LOCKSCREEN = "ambient_icons_lockscreen";
 
         /**
         * SynthUI

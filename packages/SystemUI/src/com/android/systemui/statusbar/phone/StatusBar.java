@@ -4266,6 +4266,7 @@ public class StatusBar extends SystemUI implements DemoMode,
             mStatusBarStateController.setState(StatusBarState.KEYGUARD);
         }
         updatePanelExpansionForKeyguard();
+        mNotificationPanel.updateNotificationTranslucency();
         if (mDraggedDownEntry != null) {
             mDraggedDownEntry.setUserLocked(false);
             mDraggedDownEntry.notifyHeightChanged(false /* needsAnimation */);
