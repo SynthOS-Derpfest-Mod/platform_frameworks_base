@@ -2036,6 +2036,8 @@ public class NotificationPanelView extends PanelView implements
         float qsExpansionFraction = getQsExpansionFraction();
         mQs.setQsExpansion(qsExpansionFraction, getHeaderTranslation());
         mNotificationStackScroller.setQsExpansionFraction(qsExpansionFraction);
+        mStatusBar.updateQsExpansion(qsExpansionFraction);
+        mStatusBar.updateBlurVisibility();
     }
 
     private String determineAccessibilityPaneTitle() {

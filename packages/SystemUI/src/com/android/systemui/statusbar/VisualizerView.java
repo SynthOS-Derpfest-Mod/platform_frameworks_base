@@ -48,8 +48,6 @@ public class VisualizerView extends View
     private Paint mPaint;
     private Visualizer mVisualizer;
     private ObjectAnimator mVisualizerColorAnimator;
-
-    private SettingsObserver mSettingObserver;
     private Context mContext;
 
     private ValueAnimator[] mValueAnimators;
@@ -124,11 +122,16 @@ public class VisualizerView extends View
                 return;
             }
 
-            mVisualizer.setEnabled(false);
-            mVisualizer.setCaptureSize(66);
-            mVisualizer.setDataCaptureListener(mVisualizerListener,Visualizer.getMaxCaptureRate(),
-                    false, true);
-            mVisualizer.setEnabled(true);
+            try {
+                mVisualizer.setEnabled(false);
+                mVisualizer.setCaptureSize(66);
+                mVisualizer.setDataCaptureListener(mVisualizerListener,Visualizer.getMaxCaptureRate(),
+                        false, true);
+                mVisualizer.setEnabled(true);
+            } catch (Exception e) {
+                Log.e(TAG, "error initializing visualizer", e);
+                return;
+            }
 
             if (DEBUG) {
                 Log.w(TAG, "--- mLinkVisualizer run()");
@@ -217,8 +220,6 @@ public class VisualizerView extends View
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         mLavaLamp.stop();
-        mSettingObserver.unobserve();
-        mSettingObserver = null;
         mCurrentBitmap = null;
         mObserver.unobserve();
         mObserver = null;

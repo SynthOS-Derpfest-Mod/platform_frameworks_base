@@ -965,10 +965,10 @@ public class StatusBar extends SystemUI implements DemoMode,
                 setMaxKeyguardNotifConfig();
             } else if (uri.equals(Settings.System.getUriFor(Settings.System.SYNTHOS_VOLUME_PANEL_BACKGROUND_IMAGE)) ||
                     uri.equals(Settings.System.getUriFor(Settings.System.SYSTEMUI_PLUGIN_VOLUME))) {
-                String imageUri = Settings.System.getStringForUser(mContext.getContentResolver(), Settings.System.QS_PANEL_CUSTOM_IMAGE, UserHandle.USER_CURRENT);
+                String imageUri = Settings.System.getStringForUser(mContext.getContentResolver(), Settings.System.SYNTHOS_VOLUME_PANEL_BACKGROUND_IMAGE, UserHandle.USER_CURRENT);
                 if (imageUri != null) mGamma.saveCustomFileFromString(Uri.parse(Settings.System.getStringForUser(mContext.getContentResolver(), Settings.System.SYNTHOS_VOLUME_PANEL_BACKGROUND_IMAGE, UserHandle.USER_CURRENT)), "synthos_volume_panel_background_image");
             } else if (uri.equals(Settings.System.getUriFor(Settings.System.SYNTHUI_QS_HEADER_LARGE))) {
-                    updateQSHeaderSizeOverlay();
+                updateQSHeaderSizeOverlay();
             }
         }
 
@@ -2538,7 +2538,7 @@ public class StatusBar extends SystemUI implements DemoMode,
 
     public void updateQSHeaderSizeOverlay() {
         boolean qsHeaderLarge = Settings.System.getIntForUser(mContext.getContentResolver(),
-                    Settings.System.SYNTHUI_QS_HEADER_LARGE, 0, UserHandle.USER_CURRENT) == 1;
+                    Settings.System.SYNTHUI_QS_HEADER_LARGE, 1, UserHandle.USER_CURRENT) == 1;
             try {
                 mOverlayManager.setEnabled("com.synthos.systemui.overlay.qsheadersmall",
                             qsHeaderLarge, mLockscreenUserManager.getCurrentUserId());
