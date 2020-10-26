@@ -43,6 +43,7 @@ LOCAL_REQUIRED_MODULES := \
 	FontNotoSerifSourceOverlay \
 	FontRosemarySourceOverlay \
     FontSamsungOneSourceOverlay \
+	  FontArialItalicSourceOverlay \
 	FontSFProOverlay \
 	FontSonySketchSourceOverlay \
 	FontSurferSourceOverlay \
