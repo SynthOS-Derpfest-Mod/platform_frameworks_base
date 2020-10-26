@@ -2038,6 +2038,7 @@ public class NotificationPanelView extends PanelView implements
         mNotificationStackScroller.setQsExpansionFraction(qsExpansionFraction);
         mStatusBar.updateQsExpansion(qsExpansionFraction);
         mStatusBar.updateBlurVisibility();
+        mStatusBar.updateSynthHeadsUpNotificationVisibility();
     }
 
     private String determineAccessibilityPaneTitle() {
@@ -2413,6 +2414,7 @@ public class NotificationPanelView extends PanelView implements
         mNotificationStackScroller.setAlpha(alpha);
         mStatusBar.updateBlurVisibility();
         mStatusBar.updateVisualizerVisibility(true, false);
+        mStatusBar.updateSynthHeadsUpNotificationVisibility();
         mStatusBar.setDismissAllVisible(true);
     }
 

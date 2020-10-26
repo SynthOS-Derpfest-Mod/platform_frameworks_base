@@ -6951,6 +6951,13 @@ public final class Settings {
         public static final String SYNTH_SMART_MEDIA = "synth_smart_media";
 
         /**
+        * Enable Synth HeadsUp! Notification Media
+        * by.tikkiX2
+        * @hide
+        */
+        public static final String SYNTH_HEADSUP_NOTIFICATION_MEDIA = "synth_headsup_notification_media";
+
+        /**
         * SynthUI
         * by.tikkiX2
         * @hide
