@@ -6958,6 +6958,20 @@ public final class Settings {
         public static final String SYNTH_HEADSUP_NOTIFICATION_MEDIA = "synth_headsup_notification_media";
 
         /**
+        * Enable new Synth Functional Lights!
+        * by.tikkiX2
+        * @hide
+        */
+        public static final String SYNTH_FUNCTIONAL_LIGHTS = "synth_functional_lights";
+
+        /**
+        * Enable Loop Animation in Synth Funtional Lights!
+        * by.tikkiX2
+        * @hide
+        */
+        public static final String SYNTH_FUNCTIONAL_LIGHTS_LOOP_ANIMATION = "synth_functional_lights_loop_animation";
+
+        /**
         * SynthUI
         * by.tikkiX2
         * @hide

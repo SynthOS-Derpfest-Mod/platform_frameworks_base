@@ -278,6 +278,7 @@ import com.android.systemui.statusbar.policy.UserInfoControllerImpl;
 import com.android.systemui.statusbar.policy.UserSwitcherController;
 import com.android.systemui.statusbar.policy.ZenModeController;
 import com.android.systemui.synth.gamma.Gamma;
+import com.android.systemui.synth.gamma.LightsFunctionalView;
 import com.android.systemui.synth.gamma.HeadsUpMediaNotification;
 import com.android.systemui.tuner.TunerService;
 import com.android.systemui.util.InjectionInflationController;
@@ -619,6 +620,8 @@ public class StatusBar extends SystemUI implements DemoMode,
 
     // synth additions
     private Gamma mGamma = Dependency.get(Gamma.class);
+    private LightsFunctionalView mLightsFunctionalView;
+    private boolean mLightsFunctionalViewWM;
     private boolean mHeadsUpViewWM;
     private HeadsUpMediaNotification mHeadsUpMediaNotification;
 
@@ -888,6 +891,9 @@ public class StatusBar extends SystemUI implements DemoMode,
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.SYNTH_HEADSUP_NOTIFICATION_MEDIA),
                     false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.SYNTH_FUNCTIONAL_LIGHTS),
+                    false, this, UserHandle.USER_ALL);
         }
 
         @Override
@@ -983,6 +989,8 @@ public class StatusBar extends SystemUI implements DemoMode,
                 updateQSHeaderSizeOverlay();
             } else if (uri.equals(Settings.System.getUriFor(Settings.System.SYNTH_HEADSUP_NOTIFICATION_MEDIA))) {
                 updateSynthHeadsUpNotificationVisibility();
+            } else if (uri.equals(Settings.System.getUriFor(Settings.System.SYNTH_FUNCTIONAL_LIGHTS))) {
+                updateSynthFunctionalLightsVisibility();
             }
         }
 
@@ -1537,6 +1545,7 @@ public class StatusBar extends SystemUI implements DemoMode,
 
         // Update Synth functions
         updateSynthHeadsUpNotificationVisibility();
+        updateSynthFunctionalLightsVisibility();
 
         mReportRejectedTouch = mStatusBarWindow.findViewById(R.id.report_rejected_touch);
         if (mReportRejectedTouch != null) {
@@ -1646,6 +1655,46 @@ public class StatusBar extends SystemUI implements DemoMode,
         } else if ((mDozing || mState == StatusBarState.KEYGUARD || inNotificationPanel) && mHeadsUpViewWM) {
             mWindowManager.removeView(mHeadsUpMediaNotification);
             mHeadsUpViewWM = false;
+        }
+    }
+
+    public void updateSynthFunctionalLightsVisibility() {
+
+        boolean visible = Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.SYNTH_FUNCTIONAL_LIGHTS, 1,
+                UserHandle.USER_CURRENT) == 1;
+        boolean inNotificationPanel = mNotificationPanel.getExpandedFraction() != 0;
+
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
+                LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.TYPE_STATUS_BAR_SUB_PANEL,
+                0
+                | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
+                | WindowManager.LayoutParams.FLAG_SPLIT_TOUCH,
+                PixelFormat.TRANSLUCENT);
+        lp.privateFlags |= WindowManager.LayoutParams.PRIVATE_FLAG_NO_MOVE_ANIMATION;
+        lp.gravity = Gravity.TOP | Gravity.LEFT;
+
+        if (mLightsFunctionalView == null) mLightsFunctionalView = (LightsFunctionalView) View.inflate(mContext, R.layout.synth_lights_view, null);
+
+        if (visible && mLightsFunctionalView != null && !mLightsFunctionalViewWM) {
+            mWindowManager.addView(mLightsFunctionalView, lp);
+            mLightsFunctionalView.checkState(true);
+            mLightsFunctionalViewWM = true;
+        } else if ((!visible) && mLightsFunctionalViewWM) {
+            mWindowManager.removeView(mLightsFunctionalView);
+            mLightsFunctionalView.checkState(false);
+            mLightsFunctionalViewWM = false;
+        }
+
+        if (mLightsFunctionalView != null && mVisualizerView.getVisibility() != View.VISIBLE) {
+            mLightsFunctionalView.setVisualizerVisibility(true);
+        } else if (mVisualizerView.getVisibility() == View.VISIBLE && mLightsFunctionalView != null) {
+            mLightsFunctionalView.setVisualizerVisibility(false);
         }
     }
 
@@ -4275,6 +4324,7 @@ public class StatusBar extends SystemUI implements DemoMode,
     private boolean updateIsKeyguard() {
         updateBlurVisibility();
         updateVisualizerVisibility(true, mAmbientVisualizer);
+        updateSynthFunctionalLightsVisibility();
         updateSynthHeadsUpNotificationVisibility();
         boolean wakeAndUnlocking = mBiometricUnlockController.getMode()
                 == BiometricUnlockController.MODE_WAKE_AND_UNLOCK;
@@ -4877,6 +4927,7 @@ public class StatusBar extends SystemUI implements DemoMode,
         if (mAmbientVisualizer && mDozing) {
             updateVisualizerVisibility(true, mAmbientVisualizer);
         }
+        updateSynthFunctionalLightsVisibility();
         updateSynthHeadsUpNotificationVisibility();
     }
 
@@ -5135,6 +5186,7 @@ public class StatusBar extends SystemUI implements DemoMode,
         public void onScreenTurnedOn() {
             mScrimController.onScreenTurnedOn();
             updateVisualizerVisibility(true, false);
+            updateSynthFunctionalLightsVisibility();
             updateSynthHeadsUpNotificationVisibility();
         }
 
@@ -5144,6 +5196,7 @@ public class StatusBar extends SystemUI implements DemoMode,
             mFalsingManager.onScreenOff();
             mScrimController.onScreenTurnedOff();
             updateVisualizerVisibility(false, false);
+            updateSynthFunctionalLightsVisibility();
             updateSynthHeadsUpNotificationVisibility();
             updateIsKeyguard();
         }

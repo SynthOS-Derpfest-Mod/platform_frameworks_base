@@ -50,10 +50,16 @@
         android:visibility="gone" />
 
     <include layout="@layout/lights_view"
-         android:id="@+id/lights_container"
-         android:layout_width="match_parent"
-         android:layout_height="wrap_content"
-         android:visibility="gone" />
+        android:id="@+id/lights_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
+    <include layout="@layout/synth_lights_view"
+        android:id="@+id/synth_funtional_lights_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
 
     <include layout="@layout/synth_heads_up"
         android:id="@+id/heads_up_media_synth"

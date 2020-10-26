@@ -2038,6 +2038,7 @@ public class NotificationPanelView extends PanelView implements
         mNotificationStackScroller.setQsExpansionFraction(qsExpansionFraction);
         mStatusBar.updateQsExpansion(qsExpansionFraction);
         mStatusBar.updateBlurVisibility();
+        mStatusBar.updateSynthFunctionalLightsVisibility();
         mStatusBar.updateSynthHeadsUpNotificationVisibility();
     }
 
@@ -2414,6 +2415,7 @@ public class NotificationPanelView extends PanelView implements
         mNotificationStackScroller.setAlpha(alpha);
         mStatusBar.updateBlurVisibility();
         mStatusBar.updateVisualizerVisibility(true, false);
+        mStatusBar.updateSynthFunctionalLightsVisibility();
         mStatusBar.updateSynthHeadsUpNotificationVisibility();
         mStatusBar.setDismissAllVisible(true);
     }
