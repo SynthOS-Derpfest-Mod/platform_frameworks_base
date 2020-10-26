@@ -622,6 +622,14 @@ public class QuickStatusBarHeader extends RelativeLayout implements
         int show = Settings.System.getInt(mContext.getContentResolver(),
         Settings.System.SHOW_QS_CLOCK, 1);
         mClockView.setClockVisibleByUser(show == 1);
+
+        if (mSynthClockExpandedView != null) {
+            mSynthClockExpandedView.setVisibility(show == 1 ? View.VISIBLE : View.GONE);
+        }
+
+        if (mSynthDateExpandedView != null) {
+            mSynthDateExpandedView.setVisibility(show == 1 ? View.VISIBLE : View.GONE);
+        }
     }
 
     private void updateStatusIconAlphaAnimator() {
