@@ -70,6 +70,7 @@ public class SynthMusic extends RelativeLayout implements NotificationMediaManag
    public CharSequence mMediaArtist;
    public Drawable mMediaArtwork;
    public boolean mMediaIsVisible;
+   public boolean mState;
 
    public TextView mTitle;
    public TextView mArtist;
@@ -103,8 +104,10 @@ public class SynthMusic extends RelativeLayout implements NotificationMediaManag
 
    public void initDependencies(NotificationMediaManager mediaManager, Context context) {
       mContext = context;
-      mMediaManager = mediaManager;
-      mMediaManager.addCallback(this);
+      if (mMediaManager == null) {
+          mMediaManager = mediaManager;
+          mMediaManager.addCallback(this);
+      }
       updateObjects();
    }
 
@@ -127,7 +130,16 @@ public class SynthMusic extends RelativeLayout implements NotificationMediaManag
           mMediaArtist = artist;
           mMediaArtwork = d;
 
-          update();
+          if (mState) update();
+   }
+
+   public void setState(boolean value) {
+       mState = value;
+       if (value) {
+           setVisibility(View.VISIBLE);
+       } else {
+           setVisibility(View.GONE);
+       }
    }
 
    public void update() {
@@ -174,24 +186,27 @@ public class SynthMusic extends RelativeLayout implements NotificationMediaManag
       }
    }
 
-   public void updateButtons() {
-       mPrevious.setOnClickListener(v -> {
-            mMediaManager.skipTrackPrevious();
-       });
+    public void updateButtons() {
+        if (mPrevious != null) {
+            mPrevious.setOnClickListener(v -> {
+                mMediaManager.skipTrackPrevious();
+            });
+        }
 
-       mPlayPause.setOnClickListener(v -> {
-            mMediaManager.playPauseTrack();
-       });
+        if (mPlayPause != null) {
+            mPlayPause.setOnClickListener(v -> {
+                mMediaManager.playPauseTrack();
+            });
+        }
 
-       mNext.setOnClickListener(v -> {
-            mMediaManager.skipTrackNext();
-       });
+        if (mNext != null) {
+            mNext.setOnClickListener(v -> {
+                mMediaManager.skipTrackNext();
+            });
+        }
    }
 
    public void updateViews() {
-
-        boolean show = Settings.System.getIntForUser(mContext.getContentResolver(),
-                Settings.System.SYNTHOS_MUSIC_VOLUME_PANEL_TEXT, 1, UserHandle.USER_CURRENT) != 0;
 
         if (mMediaManager != null && mMediaTitle != null && mMediaArtist != null && mMediaArtwork != null) {
             mTitle.setText(mMediaTitle.toString());
@@ -205,10 +220,10 @@ public class SynthMusic extends RelativeLayout implements NotificationMediaManag
                 Palette.generateAsync((mMediaManager.getMediaMetadata().getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART)), this);
             }
 
-            setVisibility(show ? View.VISIBLE : View.GONE);
+            if (mState) setVisibility(View.VISIBLE);
 
         } else {
-            setVisibility(View.GONE);
+            if (!mState) setVisibility(View.GONE);
         }
 
         mArtwork.setClipToOutline(true);
@@ -225,12 +240,21 @@ public class SynthMusic extends RelativeLayout implements NotificationMediaManag
         colorTextIcons = palette.getLightVibrantColor(colorTextIcons);
         colorArtwork = ColorUtils.setAlphaComponent(palette.getDarkVibrantColor(colorArtwork), shadow);
 
-        mArtwork.setColorFilter(colorArtwork, Mode.SRC_ATOP);
-        mTitle.setTextColor(colorTextIcons);
-        mArtist.setTextColor(colorTextIcons);
-        mPrevious.setColorFilter(colorTextIcons);
-        mPlayPause.setColorFilter(colorTextIcons);
-        mNext.setColorFilter(colorTextIcons);
+        try {
+            mPrevious.setColorFilter(colorTextIcons);
+            mPlayPause.setColorFilter(colorTextIcons);
+            mNext.setColorFilter(colorTextIcons);
+        } catch (Exception e) {
+            Log.d(TAG, e.getMessage());
+        }
+
+        try {
+            mArtwork.setColorFilter(colorArtwork, Mode.SRC_ATOP);
+            mTitle.setTextColor(colorTextIcons);
+            mArtist.setTextColor(colorTextIcons);
+        } catch (Exception e) {
+            Log.d(TAG, e.getMessage());
+        }
    }
 
 }

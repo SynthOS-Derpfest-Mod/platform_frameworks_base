@@ -363,7 +363,6 @@ public class KeyguardSliceView extends LinearLayout implements View.OnClickListe
     }
 
     public void setDividerVisibility(int visibility) {
-        mMediaCoolDivider.setVisibility(visibility);
         mDividerVisibility = (visibility == View.VISIBLE);
     }
 

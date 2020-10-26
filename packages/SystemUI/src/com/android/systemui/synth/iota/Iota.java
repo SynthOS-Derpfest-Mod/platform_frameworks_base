@@ -90,7 +90,6 @@ public class Iota {
 
       private boolean mHideRinger;
       private boolean mHideExtended;
-      private int mVolumePanelStyle;
       private int mVolumeAlignment;
       private final Context mContext;
       private ArrayList<ThemeUpdater> mObjects;
@@ -107,7 +106,6 @@ public class Iota {
               mContext.getContentResolver().registerContentObserver(Settings.System.getUriFor(Settings.System.SYNTHOS_HIDE_RINGER_VOLUMEPANEL), false, this, UserHandle.USER_ALL);
               mContext.getContentResolver().registerContentObserver(Settings.System.getUriFor(Settings.System.SYNTHOS_HIDE_EXTENDED_VOLUMEPANEL), false, this, UserHandle.USER_ALL);
               mContext.getContentResolver().registerContentObserver(Settings.System.getUriFor(Settings.System.SYNTHOS_MUSIC_VOLUME_PANEL_TEXT), false, this, UserHandle.USER_ALL);
-              mContext.getContentResolver().registerContentObserver(Settings.System.getUriFor(Settings.System.SYNTHOS_VOLUME_PANEL_THEME), false, this, UserHandle.USER_ALL);
               mContext.getContentResolver().registerContentObserver(Settings.System.getUriFor(Settings.System.SYNTHOS_VOLUME_PANEL_PADDING_TOP), false, this, UserHandle.USER_ALL);
               mContext.getContentResolver().registerContentObserver(Settings.System.getUriFor(Settings.System.SYNTHOS_VOLUME_PANEL_PADDING_BOTTOM), false, this, UserHandle.USER_ALL);
               mContext.getContentResolver().registerContentObserver(Settings.System.getUriFor(Settings.System.VOLUME_PANEL_ALIGNMENT), false, this, UserHandle.USER_ALL);
@@ -122,7 +120,6 @@ public class Iota {
           protected void update() {
                mHideRinger = Settings.System.getIntForUser(mContext.getContentResolver(), Settings.System.SYNTHOS_HIDE_RINGER_VOLUMEPANEL, 1, UserHandle.USER_CURRENT) == 1;
                mHideExtended = Settings.System.getIntForUser(mContext.getContentResolver(), Settings.System.SYNTHOS_HIDE_EXTENDED_VOLUMEPANEL, 0, UserHandle.USER_CURRENT) == 1;
-               mVolumePanelStyle = Settings.System.getIntForUser(mContext.getContentResolver(), Settings.System.SYNTHOS_VOLUME_PANEL_THEME, 0, UserHandle.USER_CURRENT);
                mVolumeAlignment = Settings.System.getIntForUser(mContext.getContentResolver(), Settings.System.VOLUME_PANEL_ALIGNMENT, 1, UserHandle.USER_CURRENT);
                notifyObservers();
           }
@@ -152,11 +149,6 @@ public class Iota {
           for (ThemeUpdater updater : mObjects) {
               updater.updateVolumeThemes();
           }
-      }
-
-      public int getVolumeTheme() {
-          mVolumePanelStyle = Settings.System.getIntForUser(mContext.getContentResolver(), Settings.System.SYNTHOS_VOLUME_PANEL_THEME, 0, UserHandle.USER_CURRENT);
-          return mVolumePanelStyle;
       }
 
       public int getDimensionFromVariable(String var) {
@@ -455,9 +447,9 @@ public class Iota {
             mExpandRowsView.setVisibility(View.VISIBLE);
         }
 
-        if (mBackgroundThings != null && (mVolumePanelStyle == 0) && mHideRinger && mHideExtended) {
+        if (mBackgroundThings != null && mHideRinger && mHideExtended) {
             mBackgroundThings.setVisibility(View.GONE);
-        } else if (mBackgroundThings != null && (mVolumePanelStyle == 0) && (!mHideRinger || !mHideExtended))  {
+        } else if (mBackgroundThings != null && (!mHideRinger || !mHideExtended))  {
             mBackgroundThings.setVisibility(View.VISIBLE);
         }
 

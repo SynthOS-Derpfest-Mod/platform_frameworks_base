@@ -40,7 +40,7 @@ import android.provider.Settings;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.VideoView;
 
 import java.io.File;
@@ -52,7 +52,7 @@ import java.util.Calendar;
 import com.android.systemui.R;
 import com.android.systemui.Dependency;
 
-public class AmbientCustomVideo extends FrameLayout {
+public class AmbientCustomVideo extends RelativeLayout {
 
    private final String AMBIENT_VIDEO_FILE_NAME = "custom_file_ambient_video";
 

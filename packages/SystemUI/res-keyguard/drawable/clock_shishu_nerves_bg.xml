@@ -13,20 +13,20 @@
             android:alpha="0.25"
             android:src="@*android:drawable/bootleg_theme_nerves_bg01"
             android:tileMode="repeat"
-            android:tint="@*android:color/bootleg_accent_gradient_end_color" />
+            android:tint="@color/date_style_system_accent_follow" />
     </item>
     <item>
         <bitmap xmlns:android="http://schemas.android.com/apk/res/android"
             android:src="@*android:drawable/bootleg_theme_nerves_bg02"
             android:tileMode="repeat"
             android:gravity="clip_horizontal"
-            android:tint="@*android:color/accent_material_light"
+            android:tint="@color/accent_device_default_light"
             android:alpha="0.40" />
     </item>
     <item>
         <shape android:shape="rectangle">
             <solid android:color="#00ffffff"/>
-            <stroke android:color="@*android:color/accent_material_light" android:width="4dp"/>
+            <stroke android:color="@color/accent_device_default_light" android:width="4dp"/>
         </shape>
     </item>
-</layer-list> 
+</layer-list>

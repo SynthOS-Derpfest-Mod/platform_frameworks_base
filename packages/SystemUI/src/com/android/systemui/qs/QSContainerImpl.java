@@ -266,9 +266,10 @@ public class QSContainerImpl extends FrameLayout implements
         if (mColorExtractor != null) {
             systemColors = mColorExtractor.getWallpaperColors(WallpaperManager.FLAG_SYSTEM);
         }
-        mCurrentColor = mSetQsFromAccent
-                ? getContext().getResources().getColor(R.color.accent_device_default_light)
-                : mSetQsFromWall ? mQsBackGroundColorWall : mQsBackGroundColor;
+        mCurrentColor = ((mQsBackGroundType == 1 || mQsBackGroundType == 2) && !mSetQsFromResources)
+                                ? getContext().getResources().getColor(R.color.qs_background_dark)
+                                        : mSetQsFromAccent ? getContext().getResources().getColor(R.color.accent_device_default_light)
+                                                : mSetQsFromWall ? mQsBackGroundColorWall : mQsBackGroundColor;
         mImmerseMode = Settings.System.getIntForUser(mContext.getContentResolver(),
                 Settings.System.DISPLAY_CUTOUT_MODE, 0, UserHandle.USER_CURRENT) == 1;
 
