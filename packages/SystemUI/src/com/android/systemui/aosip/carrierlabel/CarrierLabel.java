@@ -64,6 +64,7 @@ public class CarrierLabel extends TextView implements NotificationMediaManager.M
     private int mTintColor = Color.WHITE;
 
     private NotificationMediaManager mMediaManager;
+    private int mState;
 
     private CharSequence mMediaTitle;
     private CharSequence mMediaAlbum;
